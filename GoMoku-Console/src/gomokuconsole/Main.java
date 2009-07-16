@@ -1,13 +1,11 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package gomokuconsole;
+
+import goMoku.Controller.GoMokuGame;
+import goMoku.View.GoMokuConsoleView;
+import goMoku.View.IGoMokuView;
 
 /**
  *
- * @author Slim
  */
 public class Main {
 
@@ -15,7 +13,8 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        IGoMokuView view = new GoMokuConsoleView();
+        GoMokuGame game = new GoMokuGame(view);
     }
 
 }
