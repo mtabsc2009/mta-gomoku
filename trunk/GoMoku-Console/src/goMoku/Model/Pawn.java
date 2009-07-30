@@ -18,16 +18,6 @@ public class Pawn {
         this.m_type = type;
     }
     
- /*
-  *	TODO: remove later 
-  */
-    /*
-    	public Pawn(Pawn p) {
-    	m_sequence = p.getSequence();
-    	m_point = new Point(p.getLocation());
-    	m_type = p.getType();
-    }*/
-
     /**
      * @return the sequence when the pawn was put on the board
      */

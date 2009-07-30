@@ -5,7 +5,6 @@ import goMoku.View.IGoMokuView;
 import java.awt.Point;
 
 public class GoMokuConsoleGame extends GoMokuGame {
-
     private String m_blackTitle;
     private String m_whiteTitle;
 
@@ -44,47 +43,67 @@ public class GoMokuConsoleGame extends GoMokuGame {
         m_view.showStart();
 
         Point move = null;
-        boolean white_turn = true;
 
         m_view.printBoard(m_gameBoard);
         
         // Play the game until its over (quit, full board, or winning)
         while (!isGameOver()) {
 
-               
-        	// TODO : Check if player/computer, send player type+color to the method
         	// Get the next move
-        	
-        	if (white_turn) {
-        		// TODO: get rid of the 0,1 magic numbers
-        		move = m_players[0].makeMove();
+        	if (isWhiteTurn) {
+        		move = m_players[WHITE_PLAYER_INDEX].makeMove();
         	} else {
-        		move = m_players[1].makeMove();
+        		move = m_players[BLACK_PLAYER_INDEX].makeMove();
         	}
-               
-        	if (move == null) { // the user wanted to quit
+
+                // the user wanted to quit
+        	if (move == null) { 
         		break;
             }
                
+            // one of the players has entered an occupied position
             if ( m_gameBoard.hasPawn(move) ) {
-            	// one of the players has entered an occupied position 
-            	m_view.showRepeatMoveMessage();
+                m_view.printBoard(m_gameBoard);
+                m_view.showOccupiedMoveMessage();
             	continue;
-            }	   
+            }
             
             // the specified location is free - now we can place the pawn
-            if (white_turn) {
-            	m_gameBoard.PlaceWhitePawn(move);
+            boolean isLegalMove = false;
+            if (isWhiteTurn) {
+            	isLegalMove = m_gameBoard.PlaceWhitePawn(move);
             } else {
-            	m_gameBoard.PlaceBlackPawn(move);
+            	isLegalMove = m_gameBoard.PlaceBlackPawn(move);
             }
-            white_turn = !white_turn;
+
+            // Move exceeds board limits
+            if (!isLegalMove)
+            {
+                m_view.printBoard(m_gameBoard);
+                m_view.showIllegalMoveMessage();
+                continue;
+            }
+
+            isWhiteTurn = !isWhiteTurn;
             
             m_view.printBoard(m_gameBoard);
         }
 
+        // Game is over, but no victory
+        if (!getVictoryAchieved())
+        {
+            // User didnt ask to quit
+            if (move != null)
+            {
+                m_view.showNutralGameOver();
+            }
+        }
+        else
+        {
+            int winnerIndex = isWhiteTurn ? BLACK_PLAYER_INDEX : WHITE_PLAYER_INDEX;
+            m_view.showVictoryGameOver(String.format(m_players[winnerIndex].getFullPlayerTitle()), move);
+        }
         
         m_view.showGoodbye();
     }
- 
 }
