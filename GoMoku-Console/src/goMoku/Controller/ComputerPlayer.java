@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class ComputerPlayer extends Player {
 	
-	public ComputerPlayer (GameBoard board, IGoMokuView view, String name) {
-		super(board, view, name);
+	public ComputerPlayer (GameBoard board, IGoMokuView view, String name, char mark) {
+		super(board, view, name, mark);
 	}
 	
 	public Point makeMove() {

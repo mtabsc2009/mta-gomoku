@@ -11,16 +11,19 @@ public class GoMokuConsoleView implements IGoMokuView {
     public static final String USERVSCOMPUTER = "UC";
     public static final String COMPUTERVSUSER = "CU";
     public static final String COMPUTERVSCOMPUTER = "CC";
+    protected static final String QUIT_STRING = "q";
 
-    private static char BLACK_PLAYER_MARK = 'X';
-    private static char WHITE_PLAYER_MARK = '0';
+    public static char BLACK_PLAYER_MARK = 'X';
+    public static char WHITE_PLAYER_MARK = '0';
+    public static String BLACK_PLAYER_TITLE = "Black";
+    public static String WHITE_PLAYER_TITLE = "White";
     private static char EMPTY_MARK = '-';
 
     private final int QUIT_CODE = -1;
 
     // Members
-    private String m_blackTitle = "";
-    private String m_whiteTitle = "";
+    private String m_blackTitle;
+    private String m_whiteTitle;
 
     public void showGameUsage()
     {
@@ -49,7 +52,6 @@ public class GoMokuConsoleView implements IGoMokuView {
     }
 
     public int getBoardSize(int minSize, int maxSize) {
-        final String QUIT_STRING = "q";
         int size = 0;
         String sizeString;
 
@@ -67,7 +69,7 @@ public class GoMokuConsoleView implements IGoMokuView {
                 } else {
                     try {
                         size = Integer.parseInt(sizeString);
-                       /// FIXME: we should do make this check somewhere else. 
+                       /// FIXME: (why?) we should do make this check somewhere else.
                         if (size < minSize || size > maxSize) {
                             size = 0;
                             outputMessage("Board size out of range");
@@ -144,7 +146,7 @@ public class GoMokuConsoleView implements IGoMokuView {
         }
 
         // Print the column titles
-        out.print("  - ");
+        out.print("  + ");
         for (int coltitle = 0; coltitle < size; coltitle++) {
             out.print(String.format("%3c", (char)((int)(GameBoard.BOARD_START_COLUMN) + coltitle)));
         }
@@ -152,46 +154,75 @@ public class GoMokuConsoleView implements IGoMokuView {
         out.println();
     }
 
-    // 	TODO: this func should be public
     public int convertColumnNameToNumber(String colName) throws NumberFormatException {
     	
         if (colName.length() != 1) {
         	throw new NumberFormatException();
         }
         
-        byte symbol = colName.getBytes()[0];
-        if (symbol < 'A' || symbol > 'Z') {
+        char symbol = colName.charAt(0);
+        if (symbol < GameBoard.BOARD_START_COLUMN || symbol > GameBoard.BOARD_LAST_COLUMN) {
         	throw new NumberFormatException();
         }
-        
         	
-    	return (symbol - 'A' + 1);
+    	return (symbol - GameBoard.BOARD_START_COLUMN + 1);
+    }
+
+    public char convertColumnNumberToName(int colNumber) throws NumberFormatException
+    {
+        if (colNumber < 0 || colNumber > GameBoard.BOARD_LAST_COLUMN - GameBoard.BOARD_START_COLUMN + 1) {
+        	throw new NumberFormatException();
+        }
+    	return (char)(GameBoard.BOARD_START_COLUMN + colNumber - 1);
     }
     
-    public Point readMove(String playerName) {
+    public Point readMove(String playerName, char playerMark) {
 
         Point move = null;
-    	String str = readString(playerName + " move: ");
+        boolean isGoodInput = false;
 
-        try {
-        
-        	str = str.toUpperCase();
-        	
-        	// PatternSyntaxException might be thrown here. if it does, that's probably a BUG. 
-        	// And in that case, we'll crash.
-        	String colString = str.split("(\\d)+")[1];
-        	String rowString = str.split("[A-Z]")[0];
-        	
+    	String input = readString(String.format("%s Player ('%s') move (row and col. ie: 1a) or '%s' to quit: ", playerName, playerMark, QUIT_STRING));
+        while (!isGoodInput && input.compareToIgnoreCase(QUIT_STRING) != 0)
+        {
+            input = input.toUpperCase();
+            String colString = null;
+            String rowString = null;
+
+            // Check if the user gave a column placement
+            // (Split the input after the numbers and check if theres anything)
+            String[] numberSplit = input.split("(\\d)+");
+            String[] literalSplit = input.split("[A-Z]");
+            if ((numberSplit.length == 2) && (literalSplit.length == 1))
+            {
+                colString = numberSplit[1];
+                rowString = literalSplit[0];
+                isGoodInput = true;
+            }
+
+            // Check if the input was really a row number and a column name
+            try
+            {
         	int rowNumber = Integer.parseInt(rowString);
         	int colNumber = convertColumnNameToNumber(colString);
-        	
-        	move = new Point ( colNumber, rowNumber);
 
-        } catch (NumberFormatException e) {
-        	move = null;
+        	move = new Point ( colNumber, rowNumber);
+                isGoodInput = true;
+
+            }
+            catch (NumberFormatException e)
+            {
+                isGoodInput = false;
+                move = null;
+            }
+
+            if (!isGoodInput)
+            {
+                input = readString("Invalid input, please enter again (row and col. ie: 1a): ");
+            }
+
+            System.out.println("[DEBUG] recvd: "+ move.x + " " + move.y );
         }
-        
-        System.out.println("[DEBUG] recvd: "+ move.x + " " + move.y );
+
         return move;
 
     }
@@ -222,8 +253,24 @@ public class GoMokuConsoleView implements IGoMokuView {
     	System.out.println(msg);
     }
     
-    public void showRepeatMoveMessage() {
+    public void showOccupiedMoveMessage() {
     	outputMessage("The position you've entered is occupied. Please Try again. ");
+    }
+
+    public void showIllegalMoveMessage() {
+        outputMessage("The position you've entered is outside of the board. Please Try again. ");
+    }
+
+
+    public void showNutralGameOver()
+    {
+        outputMessage("Game is over, no victory! The game board is full.");
+    }
+
+    public void showVictoryGameOver(String playerTitle, Point lastMove)
+    {
+        outputMessage(String.format("Congratulations! %s is the winner!", playerTitle));
+        outputMessage(String.format("Victory move was (%d, %c) placement", lastMove.y, convertColumnNumberToName(lastMove.x)));
     }
 
 }

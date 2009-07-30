@@ -12,8 +12,11 @@ public interface IGoMokuView {
     public void showWelcome();
     public void showGoodbye();
     public void showStart();
-    public void showRepeatMoveMessage();
+    public void showOccupiedMoveMessage();
+    public void showIllegalMoveMessage();
     public void printBoard(GameBoard board);
     public void setPlayersTitle(String blackPlayerTitle, String whitePlayerTitle);
-    public Point readMove(String playerName);
+    public Point readMove(String playerName, char playerMark);
+    public void showNutralGameOver();
+    public void showVictoryGameOver(String playerTitle, Point lastMove);
 }

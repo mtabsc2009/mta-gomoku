@@ -7,29 +7,36 @@ import goMoku.Model.GameBoard;
 import goMoku.View.IGoMokuView;
 import goMoku.Model.PawnType;
 
+import goMoku.View.GoMokuConsoleView;
 import java.awt.Point;
 
 public abstract class GoMokuGame {
 
     // Constants
+    protected static final int BLACK_PLAYER_INDEX = 1;
+    protected static final int WHITE_PLAYER_INDEX = 0;
     public static final int MIN_BOARD_SIZE = 15;
     public static final int MAX_BOARD_SIZE = 19;
     public static final String COMPUTER_TITLE = "Computer";
     public static final String USER_TITLE = "Human";
+    protected static final int WINNING_STRIKE_LENGTH = 5;
 
+    private boolean m_victoryAchieved;
+    protected boolean isWhiteTurn;
 
     public GoMokuGame(GoMokuGameType gameType, IGoMokuView view) {
         m_view = view;
         m_gameType = gameType;
         m_players = new Player[2];
-       
+        m_victoryAchieved = false;
+        isWhiteTurn = true;
     }
 
     /*
      * we split the initialization into two parts.
      * first, the constructor is called, and then, after we've read the board size, and created the board,
      * the initGame function is called. 
-     * FIXME: that's a mass (?). re-factor it or explain it better
+     * FIXME: (dont agree) that's a mass (?). re-factor it or explain it better
      */
     public boolean initGame() {
     	
@@ -42,20 +49,44 @@ public abstract class GoMokuGame {
 
         switch (m_gameType) {
         case ComputerVSComputer: 
-        	m_players[0] = new ComputerPlayer(m_gameBoard, m_view, COMPUTER_TITLE); 
-        	m_players[1] = new ComputerPlayer(m_gameBoard, m_view, COMPUTER_TITLE);
+        	m_players[WHITE_PLAYER_INDEX] = new ComputerPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
+                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+        	m_players[BLACK_PLAYER_INDEX] = new ComputerPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.BLACK_PLAYER_TITLE,
+                        GoMokuConsoleView.BLACK_PLAYER_MARK);
         	break;
         case ComputerVSUser:     
-    		m_players[0] = new ComputerPlayer(m_gameBoard, m_view, COMPUTER_TITLE); 
-        	m_players[1] = new HumanPlayer(m_gameBoard, m_view, USER_TITLE);
+    		m_players[WHITE_PLAYER_INDEX] = new ComputerPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
+                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+        	m_players[BLACK_PLAYER_INDEX] = new HumanPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.BLACK_PLAYER_TITLE,
+                        GoMokuConsoleView.BLACK_PLAYER_MARK);
         	break;
         case UserVSComputer:     
-    		m_players[0] = new HumanPlayer(m_gameBoard, m_view, USER_TITLE); 
-    		m_players[1] = new ComputerPlayer(m_gameBoard, m_view, USER_TITLE);
+    		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
+                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+    		m_players[BLACK_PLAYER_INDEX] = new ComputerPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.BLACK_PLAYER_TITLE,
+                        GoMokuConsoleView.BLACK_PLAYER_MARK);
         	break;
         case UserVSUser:         
-    		m_players[0] = new HumanPlayer(m_gameBoard, m_view, USER_TITLE); 
-    		m_players[1] = new HumanPlayer(m_gameBoard, m_view, USER_TITLE);
+    		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
+                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+    		m_players[BLACK_PLAYER_INDEX] = new HumanPlayer(
+                        m_gameBoard, m_view,
+                        GoMokuConsoleView.BLACK_PLAYER_TITLE, 
+                        GoMokuConsoleView.BLACK_PLAYER_MARK);
         	break;
         }
         
@@ -72,11 +103,12 @@ public abstract class GoMokuGame {
     	
     	int lineIndex, colIndex;
     	
-    	for ( lineIndex = 1 ; lineIndex <= boardSize - 5 ; ++lineIndex) {
-    		for ( colIndex = 1 ; colIndex <= boardSize - 5 ; ++colIndex) {
+    	for ( lineIndex = 1 ; lineIndex <= boardSize - WINNING_STRIKE_LENGTH ; ++lineIndex) {
+    		for ( colIndex = 1 ; colIndex <= boardSize - WINNING_STRIKE_LENGTH ; ++colIndex) {
     			Point cell = new Point(colIndex, lineIndex);
     			if (m_gameBoard.hasPawn(cell)) {
     				if (isWinningCell(cell, boardSize, m_gameBoard.getPawnType(cell))) {
+                                        m_victoryAchieved = true;
     					return true;
     				}
     			}
@@ -93,7 +125,7 @@ public abstract class GoMokuGame {
     	 int i;
     	 boolean foundRow = true;
     	 
-    	 for (i = 0 ; i < 5 ; ++i) {
+    	 for (i = 0 ; i < WINNING_STRIKE_LENGTH ; ++i) {
     		 if (m_gameBoard.getPawnType(location.y + i*direction.y,location.x + i*direction.x) != pawnType) {
     			foundRow = false;
     			break;
@@ -125,6 +157,10 @@ public abstract class GoMokuGame {
     protected GoMokuGameType m_gameType;
     protected GameBoard m_gameBoard;
     protected Player[] m_players;
+
+    public boolean getVictoryAchieved() {
+        return m_victoryAchieved;
+    }
     
 
 }
