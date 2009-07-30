@@ -15,3 +15,4 @@ public enum GoMokuGameType {
     UserVSComputer,
     UserVSUser
 }
+

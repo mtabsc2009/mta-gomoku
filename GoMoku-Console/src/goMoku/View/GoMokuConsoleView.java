@@ -1,7 +1,6 @@
 package goMoku.View;
 
 import java.io.*;
-import goMoku.Controller.GoMokuGame;
 import goMoku.Model.*;
 import java.awt.Point;
 
@@ -23,33 +22,33 @@ public class GoMokuConsoleView implements IGoMokuView {
     private String m_blackTitle = "";
     private String m_whiteTitle = "";
 
-    public void ShowGameTypeError()
+    public void showGameUsage()
     {
-        ShowWelcome();
+        showWelcome();
 
-        System.out.println("Invalid command line parameters.");
-        System.out.println("Run GoMoku using the following format:");
-        System.out.println("    java Main <GameType>:");
-        System.out.println();
-        System.out.println("    Where <GameType> can be:");
-        System.out.println("      '" + COMPUTERVSCOMPUTER +"' - Computer VS Computer");
-        System.out.println("      '" + USERVSUSER +"' - User VS User");
-        System.out.println("      '" + COMPUTERVSUSER +"' - Computer VS User");
-        System.out.println("      '" + USERVSCOMPUTER +"' - User VS Computer");
-        System.out.println();
-        System.out.println("    Example: java Main CC");
+        //outputMessage("Invalid command line parameters.");
+        outputMessage("Run GoMoku using the following format:");
+        outputMessage("    java Main <GameType>:");
+        outputMessage("");
+        outputMessage("    Where <GameType> can be:");
+        outputMessage("      '" + COMPUTERVSCOMPUTER 	+	"' - Computer VS Computer"	);
+        outputMessage("      '" + USERVSUSER 			+	"' - User VS User"			);
+        outputMessage("      '" + COMPUTERVSUSER 		+	"' - Computer VS User"		);
+        outputMessage("      '" + USERVSCOMPUTER 		+	"' - User VS Computer"		);
+        outputMessage("");
+        outputMessage("    Example: java Main CC");
     }
 
-    public void ShowWelcome() {
-        System.out.println("Welcome to GoMoku game!");
-        System.out.println("===========================================================");
+    public void showWelcome() {
+        outputMessage("Welcome to GoMoku game!");
+        outputMessage("===========================================================");
     }
 
-    public void ShowGoodbye() {
-        System.out.println("Thank you and goodbye.");
+    public void showGoodbye() {
+        outputMessage("Thank you and goodbye.");
     }
 
-    public int GetBoardSize(int minSize, int maxSize) {
+    public int getBoardSize(int minSize, int maxSize) {
         final String QUIT_STRING = "q";
         int size = 0;
         String sizeString;
@@ -59,7 +58,7 @@ public class GoMokuConsoleView implements IGoMokuView {
 
         try {
             do {
-                System.out.println(String.format("Enter board size (%d to %d) or '%s' to quit: ",
+                outputMessage(String.format("Enter board size (%d to %d) or '%s' to quit: ",
                         minSize, maxSize, QUIT_STRING));
                 sizeString = in.readLine();
 
@@ -68,13 +67,16 @@ public class GoMokuConsoleView implements IGoMokuView {
                 } else {
                     try {
                         size = Integer.parseInt(sizeString);
+                       /// FIXME: we should do make this check somewhere else. 
                         if (size < minSize || size > maxSize) {
                             size = 0;
-                            System.out.println("Board size out of range");
+                            outputMessage("Board size out of range");
                         }
+                        
+                        
                     } catch (NumberFormatException en) {
                         size = 0;
-                        System.out.println("Invalid board size");
+                        outputMessage("Invalid board size");
                     }
                 }
             } while (size == 0);
@@ -87,29 +89,29 @@ public class GoMokuConsoleView implements IGoMokuView {
         return size;
     }
     
-    public void SetPlayersTitle(String blackPlayerTitle, String whitePlayerTitle) {
+    public void setPlayersTitle(String blackPlayerTitle, String whitePlayerTitle) {
             m_blackTitle = blackPlayerTitle;
             m_whiteTitle = whitePlayerTitle;
     }
 
 
-    public void ShowStart() {
+    public void showStart() {
 
-        System.out.println();
-        System.out.println("New game starting:");
-        System.out.println("------------------");
+        outputMessage("");
+        outputMessage("New game starting:");
+        outputMessage("------------------");
 
-        ShowPlayers();
+        showPlayers();
     }
 
-    private void ShowPlayers()
+    private void showPlayers()
     {
-        System.out.println("Players are:");
-        System.out.println(String.format("Black Player (first): \t%s  marked as %s",m_blackTitle ,BLACK_PLAYER_MARK));
-        System.out.println(String.format("White Player (second): \t%s marked as %s",m_whiteTitle ,WHITE_PLAYER_MARK));
+        outputMessage("Players are:");
+        outputMessage(String.format("Black Player (first): \t%s  marked as %s",m_blackTitle ,BLACK_PLAYER_MARK));
+        outputMessage(String.format("White Player (second): \t%s marked as %s",m_whiteTitle ,WHITE_PLAYER_MARK));
     }
 
-    public void PrintBoard(GameBoard board) {
+    public void printBoard(GameBoard board) {
 
         PrintStream out = System.out;
 
@@ -126,13 +128,13 @@ public class GoMokuConsoleView implements IGoMokuView {
                 char pawnMark = EMPTY_MARK;
 
                 // Get the pawn and its marker
-                Pawn pawn = board.getPawn(line, col);
-                if (pawn == null) {
-                    pawnMark = EMPTY_MARK;
-                } else if (pawn instanceof BlackPawn) {
-                    pawnMark = BLACK_PLAYER_MARK;
-                } else if (pawn instanceof WhitePawn) {
-                    pawnMark = WHITE_PLAYER_MARK;
+                if (board.hasPawn(line,col)) {
+                	
+                	if (board.getPawnType(line,col) == PawnType.White) {
+                		pawnMark = WHITE_PLAYER_MARK;	
+                	} else {
+                		pawnMark = BLACK_PLAYER_MARK;
+                	}
                 }
 
                 out.print(String.format("%3c", pawnMark));
@@ -150,10 +152,78 @@ public class GoMokuConsoleView implements IGoMokuView {
         out.println();
     }
 
-    public String GetMove() {
-        String move = null;
+    // 	TODO: this func should be public
+    public int convertColumnNameToNumber(String colName) throws NumberFormatException {
+    	
+        if (colName.length() != 1) {
+        	throw new NumberFormatException();
+        }
+        
+        byte symbol = colName.getBytes()[0];
+        if (symbol < 'A' || symbol > 'Z') {
+        	throw new NumberFormatException();
+        }
+        
+        	
+    	return (symbol - 'A' + 1);
+    }
+    
+    public Point readMove(String playerName) {
+
+        Point move = null;
+    	String str = readString(playerName + " move: ");
+
+        try {
+        
+        	str = str.toUpperCase();
+        	
+        	// PatternSyntaxException might be thrown here. if it does, that's probably a BUG. 
+        	// And in that case, we'll crash.
+        	String colString = str.split("(\\d)+")[1];
+        	String rowString = str.split("[A-Z]")[0];
+        	
+        	int rowNumber = Integer.parseInt(rowString);
+        	int colNumber = convertColumnNameToNumber(colString);
+        	
+        	move = new Point ( colNumber, rowNumber);
+
+        } catch (NumberFormatException e) {
+        	move = null;
+        }
+        
+        System.out.println("[DEBUG] recvd: "+ move.x + " " + move.y );
         return move;
 
-        // TODO: implement get move
     }
+    
+    private String readString() {
+    	return readString(null);
+    }
+    private String readString(String prompt) {
+    	
+    	if (prompt != null) {
+    		outputMessage(prompt);
+    	}
+    	
+    	BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    	String inputLine = null;
+    	
+    	try {
+    		inputLine = in.readLine();
+    		
+    	} catch (IOException e) {
+    		return null;
+    	}
+    	
+    	return inputLine;
+    }
+    
+    public void outputMessage(String msg) {
+    	System.out.println(msg);
+    }
+    
+    public void showRepeatMoveMessage() {
+    	outputMessage("The position you've entered is occupied. Please Try again. ");
+    }
+
 }
