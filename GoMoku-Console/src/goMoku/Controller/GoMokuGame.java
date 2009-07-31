@@ -36,12 +36,12 @@ public abstract class GoMokuGame {
      * we split the initialization into two parts.
      * first, the constructor is called, and then, after we've read the board size, and created the board,
      * the initGame function is called. 
-     * FIXME: (dont agree) that's a mass (?). re-factor it or explain it better
+     * FIXME: (don't agree) that's a mass (?). re-factor it or explain it better
      */
     public boolean initGame() {
     	
     	int boardSize = m_view.getBoardSize(MIN_BOARD_SIZE,MAX_BOARD_SIZE);
-        if ( boardSize <=0 ) {	// getBoardSize will return <= 0 in case of error 
+        if ( boardSize <=0 ) {	// getBoardSize will return <= 0 in case of an error 
             return false;
         }
     	
@@ -97,14 +97,14 @@ public abstract class GoMokuGame {
     public boolean isGameOver() {
     	
     	int boardSize = m_gameBoard.getSize();
-    	if (m_gameBoard.getpawnsCount() >= boardSize*boardSize) {
+    	if (m_gameBoard.getPawnsCount() >= m_gameBoard.getPawnsMaxCount()) {
     		return true;
     	}
     	
     	int lineIndex, colIndex;
     	
-    	for ( lineIndex = 1 ; lineIndex <= boardSize - WINNING_STRIKE_LENGTH ; ++lineIndex) {
-    		for ( colIndex = 1 ; colIndex <= boardSize - WINNING_STRIKE_LENGTH ; ++colIndex) {
+    	for ( lineIndex = 1 ; lineIndex <= boardSize; ++lineIndex) {
+    		for ( colIndex = 1 ; colIndex <= boardSize; ++colIndex) {
     			Point cell = new Point(colIndex, lineIndex);
     			if (m_gameBoard.hasPawn(cell)) {
     				if (isWinningCell(cell, boardSize, m_gameBoard.getPawnType(cell))) {
@@ -126,7 +126,7 @@ public abstract class GoMokuGame {
     	 boolean foundRow = true;
     	 
     	 for (i = 0 ; i < WINNING_STRIKE_LENGTH ; ++i) {
-    		 if (m_gameBoard.getPawnType(location.y + i*direction.y,location.x + i*direction.x) != pawnType) {
+    		 if (m_gameBoard.getPawnType(location.y + i*direction.y, location.x + i*direction.x) != pawnType) {
     			foundRow = false;
     			break;
     		 }
@@ -136,18 +136,20 @@ public abstract class GoMokuGame {
     }
     
     private boolean isWinningCell(Point location, int boardSize, PawnType pawnType) {
-    	
-    	 Point lineDirection = new Point(1,0);
-    	 Point colDirection = new Point(0,1);
-    	 Point diagDirection = new Point(1,1);
+
+    	 Point lineDirection		= new Point(1,0);
+    	 Point colDirection 		= new Point(0,1);
+    	 Point diagDirection 		= new Point(1,1);
+    	 Point backDiagDirection	= new Point(-1,1);
     	 
     	 if (m_gameBoard.hasPawn(location) == false) {
     		 return false;
     	 }
     	 
     	 return (hasFiveRow(location, lineDirection, boardSize, pawnType) ||
-    			 hasFiveRow(location, colDirection, boardSize, pawnType) ||
-    			 hasFiveRow(location, diagDirection, boardSize, pawnType) );
+    			 hasFiveRow(location, colDirection, boardSize, pawnType)  ||
+    			 hasFiveRow(location, diagDirection, boardSize, pawnType) ||
+    			 hasFiveRow(location, backDiagDirection, boardSize, pawnType));
     			
     }
     
