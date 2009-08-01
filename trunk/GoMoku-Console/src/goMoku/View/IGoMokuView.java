@@ -18,5 +18,6 @@ public interface IGoMokuView {
     public void setPlayersTitle(String blackPlayerTitle, String whitePlayerTitle);
     public Point readMove(String playerName, char playerMark);
     public void showNutralGameOver();
-    public void showVictoryGameOver(String playerTitle, Point lastMove);
+    //public void showVictoryGameOver(String playerTitle, Point lastMove);
+    public void showVictoryGameOver(boolean whiteWon, Point lastMove);
 }

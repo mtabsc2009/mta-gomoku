@@ -12,7 +12,7 @@ public class GoMokuConsoleView implements IGoMokuView {
     public static final String COMPUTERVSUSER = "CU";
     public static final String COMPUTERVSCOMPUTER = "CC";
     protected static final String QUIT_STRING = "q";
-
+    
     public static char BLACK_PLAYER_MARK = 'X';
     public static char WHITE_PLAYER_MARK = '0';
     public static String BLACK_PLAYER_TITLE = "Black";
@@ -29,7 +29,6 @@ public class GoMokuConsoleView implements IGoMokuView {
     {
         showWelcome();
 
-        //outputMessage("Invalid command line parameters.");
         outputMessage("Run GoMoku using the following format:");
         outputMessage("    java Main <GameType>:");
         outputMessage("");
@@ -41,7 +40,7 @@ public class GoMokuConsoleView implements IGoMokuView {
         outputMessage("");
         outputMessage("    Example: java Main CC");
     }
-
+    
     public void showWelcome() {
         outputMessage("Welcome to GoMoku game!");
         outputMessage("===========================================================");
@@ -109,8 +108,8 @@ public class GoMokuConsoleView implements IGoMokuView {
     private void showPlayers()
     {
         outputMessage("Players are:");
-        outputMessage(String.format("Black Player (first): \t%s  marked as %s",m_blackTitle ,BLACK_PLAYER_MARK));
-        outputMessage(String.format("White Player (second): \t%s marked as %s",m_whiteTitle ,WHITE_PLAYER_MARK));
+        outputMessage(String.format("White Player (first): \t%s marked as %s",m_whiteTitle ,WHITE_PLAYER_MARK));
+        outputMessage(String.format("Black Player (second): \t%s marked as %s",m_blackTitle ,BLACK_PLAYER_MARK));
     }
 
     public void printBoard(GameBoard board) {
@@ -202,11 +201,11 @@ public class GoMokuConsoleView implements IGoMokuView {
             // Check if the input was really a row number and a column name
             try
             {
-        	int rowNumber = Integer.parseInt(rowString);
-        	int colNumber = convertColumnNameToNumber(colString);
-
-        	move = new Point ( colNumber, rowNumber);
-                isGoodInput = true;
+	        	int rowNumber = Integer.parseInt(rowString);
+	        	int colNumber = convertColumnNameToNumber(colString);
+	
+	        	move = new Point ( colNumber, rowNumber);
+	        	isGoodInput = true;
 
             }
             catch (NumberFormatException e)
@@ -220,7 +219,6 @@ public class GoMokuConsoleView implements IGoMokuView {
                 input = readString("Invalid input, please enter again (row and col. ie: 1a): ");
             }
 
-            System.out.println("[DEBUG] recvd: "+ move.x + " " + move.y );
         }
 
         return move;
@@ -262,14 +260,15 @@ public class GoMokuConsoleView implements IGoMokuView {
     }
 
 
-    public void showNutralGameOver()
-    {
+    public void showNutralGameOver() {
         outputMessage("Game is over, no victory! The game board is full.");
     }
 
-    public void showVictoryGameOver(String playerTitle, Point lastMove)
-    {
-        outputMessage(String.format("Congratulations! %s is the winner!", playerTitle));
+    public void showVictoryGameOver(boolean whiteWon, Point lastMove) {
+        String playerTitle = whiteWon ? WHITE_PLAYER_TITLE : BLACK_PLAYER_TITLE;
+        char playerMark = whiteWon ? WHITE_PLAYER_MARK : BLACK_PLAYER_MARK;
+        
+    	outputMessage(String.format("Congratulations! %s (%c) is the winner!", playerTitle, playerMark));
         outputMessage(String.format("Victory move was (%d, %c) placement", lastMove.y, convertColumnNumberToName(lastMove.x)));
     }
 
