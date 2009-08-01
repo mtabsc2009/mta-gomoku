@@ -1,33 +1,13 @@
 package goMoku.Controller;
 
-////import goMoku.Model.GameBoard;
 import goMoku.View.IGoMokuView;
 import java.awt.Point;
 
+
 public class GoMokuConsoleGame extends GoMokuGame {
-    private String m_blackTitle;
-    private String m_whiteTitle;
 
     public GoMokuConsoleGame(GoMokuGameType gameType, IGoMokuView view) {
         super(gameType, view);
-
-        switch (gameType) {
-            case ComputerVSComputer: 
-            	m_blackTitle = COMPUTER_TITLE; 
-            	m_whiteTitle = COMPUTER_TITLE;
-            	break;
-            case ComputerVSUser:     
-            	m_blackTitle = COMPUTER_TITLE; 
-            	m_whiteTitle = USER_TITLE;
-            	break;
-            case UserVSComputer:     
-            	m_blackTitle = USER_TITLE; 
-            	m_whiteTitle = COMPUTER_TITLE;
-            	break;
-            case UserVSUser:         
-            	m_blackTitle = USER_TITLE; 
-            	m_whiteTitle = USER_TITLE;
-        }
     }
 
 
@@ -39,7 +19,6 @@ public class GoMokuConsoleGame extends GoMokuGame {
             return;
         }
         
-        m_view.setPlayersTitle(m_blackTitle, m_whiteTitle);
         m_view.showStart();
 
         Point move = null;
@@ -56,10 +35,12 @@ public class GoMokuConsoleGame extends GoMokuGame {
         		move = m_players[BLACK_PLAYER_INDEX].makeMove();
         	}
 
-                // the user wanted to quit
+            // the user wanted to quit
         	if (move == null) { 
         		break;
             }
+        	
+        	
                
             // one of the players has entered an occupied position
             if ( m_gameBoard.hasPawn(move) ) {
@@ -81,7 +62,8 @@ public class GoMokuConsoleGame extends GoMokuGame {
             {
                 m_view.printBoard(m_gameBoard);
                 m_view.showIllegalMoveMessage();
-                continue;
+                break;//FIXME: 
+                //continue;
             }
 
             isWhiteTurn = !isWhiteTurn;
@@ -90,18 +72,20 @@ public class GoMokuConsoleGame extends GoMokuGame {
         }
 
         // Game is over, but no victory
-        if (!getVictoryAchieved())
-        {
-            // User didnt ask to quit
-            if (move != null)
-            {
+        if (!getVictoryAchieved()) {
+            // User didn't ask to quit
+            if (move != null) {
                 m_view.showNutralGameOver();
             }
         }
         else
         {
-            int winnerIndex = isWhiteTurn ? BLACK_PLAYER_INDEX : WHITE_PLAYER_INDEX;
-            m_view.showVictoryGameOver(String.format(m_players[winnerIndex].getFullPlayerTitle()), move);
+        	/*
+        	 * after winning move move, the isWhiteTurn was updated
+        	 * so the winner is the player who made the previous turn.
+        	 */
+        	boolean whitePlayerWon = !isWhiteTurn;
+            m_view.showVictoryGameOver(whitePlayerWon, move);
         }
         
         m_view.showGoodbye();
