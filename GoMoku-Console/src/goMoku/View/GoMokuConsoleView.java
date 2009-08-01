@@ -1,16 +1,14 @@
 package goMoku.View;
 
 import java.io.*;
+
+import goMoku.Controller.GoMokuGameType;
 import goMoku.Model.*;
 import java.awt.Point;
 
 public class GoMokuConsoleView implements IGoMokuView {
 
     // Constants
-    public static final String USERVSUSER = "UU";
-    public static final String USERVSCOMPUTER = "UC";
-    public static final String COMPUTERVSUSER = "CU";
-    public static final String COMPUTERVSCOMPUTER = "CC";
     protected static final String QUIT_STRING = "q";
     
     public static char BLACK_PLAYER_MARK = 'X';
@@ -28,15 +26,15 @@ public class GoMokuConsoleView implements IGoMokuView {
     public void showGameUsage()
     {
         showWelcome();
-
+        
         outputMessage("Run GoMoku using the following format:");
         outputMessage("    java Main <GameType>:");
         outputMessage("");
         outputMessage("    Where <GameType> can be:");
-        outputMessage("      '" + COMPUTERVSCOMPUTER 	+	"' - Computer VS Computer"	);
-        outputMessage("      '" + USERVSUSER 			+	"' - User VS User"			);
-        outputMessage("      '" + COMPUTERVSUSER 		+	"' - Computer VS User"		);
-        outputMessage("      '" + USERVSCOMPUTER 		+	"' - User VS Computer"		);
+        outputMessage("      '" + GoMokuGameType.ComputerVSComputer.getCmdline()+	"' - Computer VS Computer"	);
+        outputMessage("      '" + GoMokuGameType.UserVSUser.getCmdline() 		+	"' - User VS User"			);
+        outputMessage("      '" + GoMokuGameType.ComputerVSUser.getCmdline() 	+	"' - Computer VS User"		);
+        outputMessage("      '" + GoMokuGameType.UserVSComputer.getCmdline() 	+	"' - User VS Computer"		);
         outputMessage("");
         outputMessage("    Example: java Main CC");
     }
