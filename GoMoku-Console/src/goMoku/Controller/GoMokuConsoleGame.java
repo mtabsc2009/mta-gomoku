@@ -40,8 +40,7 @@ public class GoMokuConsoleGame extends GoMokuGame {
         		break;
             }
         	
-        	
-               
+
             // one of the players has entered an occupied position
             if ( m_gameBoard.hasPawn(move) ) {
                 m_view.printBoard(m_gameBoard);
@@ -62,8 +61,7 @@ public class GoMokuConsoleGame extends GoMokuGame {
             {
                 m_view.printBoard(m_gameBoard);
                 m_view.showIllegalMoveMessage();
-                break;//FIXME: 
-                //continue;
+                continue;
             }
 
             isWhiteTurn = !isWhiteTurn;
