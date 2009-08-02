@@ -29,30 +29,38 @@ public class Main {
     	}
     }
     
+    /**
+     * 
+     * @param args is the command line arguments
+     * @return the game type as specified in the command line
+     * @throws InvalidCommandLineException in case of invalid command line parameters
+     * 			(wrong parameters or no parameters) 
+     */
     public static GoMokuGameType parseCommandLineParams(String args[]) throws InvalidCommandLineException {
     	
-
     	if (args.length == 0) {
     		throw new InvalidCommandLineException("No parameters were entered");
     	}
     	
-    	GoMokuGameType gameType;
-    	String gameTypeString = args[0].toUpperCase();
+    	if (args.length > 1) {
+    		throw new InvalidCommandLineException("Too many parameters were entered");
+    	}
     	
+    	String commandline = args[0].toUpperCase();
     	
-        if (gameTypeString.compareTo(GoMokuConsoleView.USERVSUSER) == 0){
-            gameType = GoMokuGameType.UserVSUser;
-        } else if (gameTypeString.compareTo(GoMokuConsoleView.COMPUTERVSCOMPUTER) == 0){
-            gameType = GoMokuGameType.ComputerVSComputer;
-        } else if (gameTypeString.compareTo(GoMokuConsoleView.COMPUTERVSUSER) == 0){
-            gameType = GoMokuGameType.ComputerVSUser;
-        } else if (gameTypeString.compareTo(GoMokuConsoleView.USERVSCOMPUTER) == 0){
-            gameType = GoMokuGameType.UserVSComputer;
-        } else {
-        	throw new InvalidCommandLineException("Wrong parameters");
-        }
+    	/* 
+    	 * iterate over the game types and compare the user command line 
+    	 * to game type's command line 
+    	 */
+    	for (GoMokuGameType gameType : GoMokuGameType.values()) {
+    		if (gameType.getCmdline().compareTo(commandline) == 0) {
+    			return gameType;
+    		}
+    	}
+    	
+        // the specified command line argument didn't match to any of the game types
+        throw new InvalidCommandLineException("Wrong parameters");
         
-        return gameType;
     }
     
 }
