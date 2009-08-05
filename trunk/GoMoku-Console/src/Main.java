@@ -1,8 +1,7 @@
-package main;
-
 import goMoku.Controller.GoMokuConsoleGame;
 import goMoku.Controller.GoMokuGameType;
 import goMoku.Controller.InvalidCommandLineException;
+import goMoku.Controller.UserAbortException;
 import goMoku.View.GoMokuConsoleView;
 
 
@@ -15,18 +14,25 @@ public class Main {
     public static void main(String[] args) {
     	GoMokuConsoleView view = new GoMokuConsoleView();
     	
+    	view.showWelcome();
+    	
         try {	
 	
 	        GoMokuGameType gameType = parseCommandLineParams(args);
 	        	
-	
 	        GoMokuConsoleGame flow = new GoMokuConsoleGame(gameType, view);
+	        
 	        flow.Start();
+	        
 
     	} catch (InvalidCommandLineException e) {
     		view.outputMessage(e.toString());
     		view.showGameUsage();
+    	} catch (UserAbortException e) {
+    		
     	}
+    	
+    	view.showGoodbye();
     }
     
     /**
