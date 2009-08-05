@@ -3,45 +3,45 @@ package goMoku.Controller;
 import goMoku.Model.GameBoard;
 import goMoku.View.IGoMokuView;
 import goMoku.Model.PawnType;
-
 import goMoku.View.GoMokuConsoleView;
 import java.awt.Point;
+
 
 public abstract class GoMokuGame {
 
     // Constants
 	protected static final int WHITE_PLAYER_INDEX = 0;
 	protected static final int BLACK_PLAYER_INDEX = 1;
-    public static final int MIN_BOARD_SIZE = 15;
-    public static final int MAX_BOARD_SIZE = 19;
-    public static final String COMPUTER_TITLE = "Computer";
-    public static final String USER_TITLE = "Human";
+    protected static final int MIN_BOARD_SIZE = 15;
+    protected static final int MAX_BOARD_SIZE = 19;
+    protected static final String COMPUTER_TITLE = "Computer";
+    protected static final String USER_TITLE = "Human";
     protected static final int WINNING_STRIKE_LENGTH = 5;
-
     private boolean m_victoryAchieved;
     protected boolean isWhiteTurn;
 
-    public GoMokuGame(GoMokuGameType gameType, IGoMokuView view) {
+    /**
+     * 
+     * @param gameType is the type of the game (Computer-Computer, Computer-User, etc.) 
+     * @param view is the object that is used for UI operations
+     * @throws	UserAbortException if user requested to quit 
+     * 			(might happen while reading the board size input)
+     */
+    public GoMokuGame(GoMokuGameType gameType, IGoMokuView view) throws UserAbortException{
         m_view = view;
         m_gameType = gameType;
         m_players = new Player[2];
         m_victoryAchieved = false;
         isWhiteTurn = true;
+        
+        /* do the actual initialization process */
+        initGame();	/* might throw InvalidUserInputException */
+        	
     }
 
-    /*
-     * TODO: FIX / COMMENT
-     * we split the initialization into two parts.
-     * first, the constructor is called, and then, after we've read the board size, and created the board,
-     * the initGame function is called. 
-     * FIXME: (don't agree) that's a mass (?). re-factor it or explain it better
-     */
-    public boolean initGame() {
+    private void initGame() throws UserAbortException {
     	
     	int boardSize = m_view.getBoardSize(MIN_BOARD_SIZE,MAX_BOARD_SIZE);
-        if ( boardSize <=0 ) {	/* getBoardSize will return <= 0 in case of an error */ 
-            return false;
-        }
     	
         m_gameBoard = new GameBoard(boardSize);
 
@@ -111,7 +111,7 @@ public abstract class GoMokuGame {
     		break;
         }
         
-        return true;
+        return;
     }
     
     /**
@@ -187,7 +187,7 @@ public abstract class GoMokuGame {
     }
     
     
-    /**	TODO
+    /**	
      * Checks if a cell begins a winning row
      * 
      * @param location is the location of the first cell in the row

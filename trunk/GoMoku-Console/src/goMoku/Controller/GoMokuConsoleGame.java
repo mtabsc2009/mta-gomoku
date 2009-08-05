@@ -6,19 +6,13 @@ import java.awt.Point;
 
 public class GoMokuConsoleGame extends GoMokuGame {
 
-    public GoMokuConsoleGame(GoMokuGameType gameType, IGoMokuView view) {
+    public GoMokuConsoleGame(GoMokuGameType gameType, IGoMokuView view) throws UserAbortException{
         super(gameType, view);
     }
 
 
-    public void Start()
-    {
-        m_view.showWelcome();
-        if (!initGame()) {
-            m_view.showGoodbye();
-            return;
-        }
-        
+    public void Start() throws UserAbortException   {
+
         m_view.showStart();
 
         Point move = null;
@@ -35,11 +29,6 @@ public class GoMokuConsoleGame extends GoMokuGame {
         		move = m_players[BLACK_PLAYER_INDEX].makeMove();
         	}
 
-            // the user wanted to quit
-        	if (move == null) { 
-        		break;
-            }
-        	
 
             // one of the players has entered an occupied position
             if ( m_gameBoard.hasPawn(move) ) {
@@ -57,8 +46,7 @@ public class GoMokuConsoleGame extends GoMokuGame {
             }
 
             // Move exceeds board limits
-            if (!isLegalMove)
-            {
+            if (!isLegalMove) {
                 m_view.printBoard(m_gameBoard);
                 m_view.showIllegalMoveMessage();
                 continue;
@@ -67,25 +55,23 @@ public class GoMokuConsoleGame extends GoMokuGame {
             isWhiteTurn = !isWhiteTurn;
             
             m_view.printBoard(m_gameBoard);
-        }
+            
+        } /* end of game loop */
 
-        // Game is over, but no victory
-        if (!getVictoryAchieved()) {
-            // User didn't ask to quit
-            if (move != null) {
-                m_view.showNutralGameOver();
-            }
-        }
-        else
-        {
+        
+        if (getVictoryAchieved()) {
         	/*
         	 * after winning move move, the isWhiteTurn was updated
         	 * so the winner is the player who made the previous turn.
         	 */
         	boolean whitePlayerWon = !isWhiteTurn;
             m_view.showVictoryGameOver(whitePlayerWon, move);
+            
+        }
+        else {
+        	// Game is over, but no victory
+        	m_view.showNutralGameOver();        	
         }
         
-        m_view.showGoodbye();
-    }
+    } /* end of flow() */    
 }

@@ -19,7 +19,7 @@ public class HumanPlayer extends Player {
 	 * 
 	 * @return Move coordinates entered by the player  
 	 */
-	public Point makeMove() {
+	public Point makeMove() throws UserAbortException{
 		return m_view.readMove(m_name, m_mark);
 	}
 	
