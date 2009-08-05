@@ -24,7 +24,13 @@ public abstract class Player {
 		m_mark = mark;
 	}
 	
-	abstract Point makeMove();
+	/**
+	 * 
+	 * @return a move received from the player.
+	 * @throws UserAbortException any input operations done by the view 
+	 * 		 	object might throw this exception.
+	 */
+	abstract Point makeMove() throws UserAbortException;
 
 	/**
 	 *	@returns The players full title (contains players name and mark).  
