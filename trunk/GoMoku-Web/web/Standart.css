@@ -1,0 +1,31 @@
+/* 
+    Document   : Standart
+    Created on : 21/08/2009, 17:36:07
+    Author     : Slim
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/* 
+   TODO customize this sample style
+   Syntax recommendation http://www.w3.org/TR/REC-CSS2/
+*/
+
+root { 
+    display: block;
+}
+
+HTML {
+	Font-Size: 100%;
+}
+
+Body {
+	Font-Size: 10pt;
+	background-color: #D7DFEA;
+	font-family: Arial;
+}
+
+
+A:link, A:visited, A:active { font: Arial; color: #1267BC; text-decoration: none; }
+A:hover { font: Arial; color: #0D4B8A; text-decoration: underline; }
+
