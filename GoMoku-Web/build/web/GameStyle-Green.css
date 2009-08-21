@@ -1,0 +1,92 @@
+/* 
+    Document   : GameStyle-Green
+    Created on : 21/08/2009, 15:03:44
+    Author     : Slim
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+
+HTML {
+	Font-Size: 100%;
+}
+
+Body {
+	Font-Size: 10pt;
+	background-color: #D7DFEA;
+	font-family: Arial;
+}
+
+
+A:link, A:visited, A:active { font: Arial; color: #1267BC; text-decoration: none; }
+A:hover { font: Arial; color: #0D4B8A; text-decoration: underline; }
+
+
+.index {
+	background-color: green;
+	border: 1px solid lightgreen;
+}
+.td_1 {
+	background-color: #77d632;
+	font-size:10px;
+	font-family:tahoma,arial;
+	width:25px;
+	text-align: center;
+	border: 1px solid aqua;
+}
+.td_2 {
+	background-color: #cef2b3;
+	font-size:10px;
+	font-family:tahoma,arial;
+	width:25px;
+	text-align: center;
+	border: 1px solid aqua;
+}
+.board {
+	border: 1px solid aqua;
+}
+.td_s {
+	background-color: #00B1F7;
+	font-size:10px;
+	font-family:tahoma,arial;
+	width: 25px;
+	color: #ffffff;
+	text-align: center;
+	height: 23px;
+	border: 1px solid aqua;
+}
+
+.BUTTON
+{
+	background-color:#DADADA;
+	border-style:0;
+	border-left:1px Gray solid;
+	border-top:1px Gray solid;
+	border-right:1px #000000 solid;
+	border-bottom:1px #000000 solid;
+	color:#000000;
+	Font-Family : Arial;
+	Font-Size: 10pt;
+	Font-weight: Bold;
+}
+
+.FIELD {
+	Font-Family: Arial;
+	Cols: 60;
+	BackGround-color: #E4F7A6;
+	border-style:0;
+	border:1px solid Gray;
+	Color: #000;
+}
+
+.SELECT {
+	BackGround: #94BA12;
+	Font-Family: Arial;
+	Color: White;
+	Font-Size: 10pt;
+}
+

@@ -1,0 +1,1 @@
+goMoku.Model.Pawn
