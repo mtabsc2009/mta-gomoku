@@ -158,7 +158,7 @@
         }
                                 %>
                             </select>
-                                <input type="hidden" name="newGame" id="newGame">
+                                <input type="hidden" name="newGame" id="newGame"/>
                                 <input type='submit' value='NewGame' CLASS='BUTTON'/></td></tr>
                     </form>
                 </tbody>
