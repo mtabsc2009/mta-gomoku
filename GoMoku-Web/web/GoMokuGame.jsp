@@ -105,15 +105,22 @@
             <table border='0' cellpadding='4' width='100%' style='border: 3px solid white;' valign='bottom'>
                 <tbody>
                     <tr>
-                        <td align="right">
+                        <td align="right" style="width:auto;">
                             <input type='button' value='Move' CLASS='BUTTON' onclick='MakeTextMove()'/>
                             <input type='text' id='moveText' style='width: 50px;' class='FIELD' dir='ltr'>
                         </td>
-                        <td align="left" dir="ltr">
+                        <td align="left" dir="ltr" style="width:33%;">
                             <%
                             // Check if the game is over
                               boolean gameOver = (session.getAttribute(GamePlay.ATT_VICTORY) != null);
-                              if (gameOver)
+                              if (!gameOver)
+                              {
+                                  String playerMark = game.getCurrPlayer().getName().compareTo("White") == 0 ? "player1.bmp" : "player2.bmp";
+                              %>
+                              Current player: <img  alt="<%= game.getCurrPlayer().getName() %>" src="<%= playerMark %>">
+                              <%
+                             }
+                              else
                               {
                                   // Get the state and the winner
                                   boolean victory = ((Boolean)(session.getAttribute(GamePlay.ATT_VICTORY))).booleanValue();
@@ -137,7 +144,7 @@
                               }
                             %>
                         </td>
-                        <td dir='ltr' align="left">
+                        <td dir='ltr' align="left" style="width:45%;">
                             <form id="newGameForm" Method='POST' action='GamePlay'>
                             <select name='GameType' id='GameType' class='SELECT' dir='ltr'>
                                 <%

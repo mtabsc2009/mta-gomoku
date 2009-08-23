@@ -137,6 +137,11 @@ public abstract class GoMokuGame {
     	return false;
     }
 
+    public Player getCurrPlayer()
+    {
+        int currentPlayer = isWhiteTurn ? WHITE_PLAYER_INDEX : BLACK_PLAYER_INDEX;
+        return m_players[currentPlayer];
+    }
     
     /** 
      * Checks if a cell holds one of the (four) winning conditions. 
