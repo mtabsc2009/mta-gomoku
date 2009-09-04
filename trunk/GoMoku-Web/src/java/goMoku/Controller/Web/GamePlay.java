@@ -9,8 +9,6 @@ import javax.servlet.http.HttpSession;
 import goMoku.Model.*;
 import goMoku.Controller.GoMokuGameType;
 import goMoku.Controller.GoMokuWebGame;
-import goMoku.Controller.UserAbortException;
-import goMoku.View.GoMokuConsoleView;
 import java.awt.Point;
 
 public class GamePlay extends HttpServlet {
@@ -51,19 +49,15 @@ public class GamePlay extends HttpServlet {
                 }
 
                 // Create a new game
-                try
-                {
-                    gameFlow = new GoMokuWebGame(gameType, new GoMokuConsoleView());
+              
+                    gameFlow = new GoMokuWebGame(gameType);
                     if (gameType == gameType.ComputerVSUser)
                     {
                         gameFlow.makeFirstComputerMove();
                     }
                     session.setAttribute(ATT_GAME, gameFlow);
                     session.setAttribute(ATT_VICTORY, null);
-                }
-                catch (UserAbortException e)
-                {
-                }
+               
             }
             // A game is going on
             else

@@ -1,26 +1,24 @@
 package goMoku.Controller;
 
-import goMoku.View.IGoMokuView;
 import java.awt.Point;
 
 
 public class GoMokuWebGame extends GoMokuGame {
 
-    public GoMokuWebGame(GoMokuGameType gameType, IGoMokuView view) throws UserAbortException{
-        super(gameType, view);
+    public GoMokuWebGame(GoMokuGameType gameType) {
+        super(gameType);
     }
 
     private void makeComputerMove(int nextPlayer) {
         if (m_players[nextPlayer] instanceof ComputerPlayer) {
-            try {
+             
                 Point computerMove = m_players[nextPlayer].makeMove();
                 if (isWhiteTurn) {
                     m_gameBoard.PlaceWhitePawn(computerMove);
                 } else {
                     m_gameBoard.PlaceBlackPawn(computerMove);
                 }
-            } catch (UserAbortException e) {
-            }
+
             // If the game is not over - switch turns
             if (!isGameOver()) {
                 isWhiteTurn = !isWhiteTurn;
