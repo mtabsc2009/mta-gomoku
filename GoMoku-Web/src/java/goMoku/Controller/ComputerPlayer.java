@@ -1,7 +1,6 @@
 package goMoku.Controller;
 
 import goMoku.Model.GameBoard;
-import goMoku.View.IGoMokuView;
 import java.awt.Point;
 import java.util.Random;
 
@@ -12,8 +11,8 @@ import java.util.Random;
  */
 public class ComputerPlayer extends Player {
 	
-	public ComputerPlayer (GameBoard board, IGoMokuView view, String name, char mark) {
-		super(board, view, name, mark);
+	public ComputerPlayer (GameBoard board, String name) {
+		super(board, name);
 	}
 	
 	/**

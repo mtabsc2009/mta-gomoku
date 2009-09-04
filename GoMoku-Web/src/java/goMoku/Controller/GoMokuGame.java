@@ -1,8 +1,6 @@
 package goMoku.Controller;
 
 import goMoku.Model.GameBoard;
-import goMoku.View.IGoMokuView;
-import goMoku.View.GoMokuConsoleView;
 import goMoku.Model.PawnType;
 import java.awt.Point;
 import goMoku.Controller.*;
@@ -13,14 +11,13 @@ public abstract class GoMokuGame {
     // Constants
     protected static final int WHITE_PLAYER_INDEX = 0;
     protected static final int BLACK_PLAYER_INDEX = 1;
+    protected static String BLACK_PLAYER_TITLE = "Black";
+    protected static String WHITE_PLAYER_TITLE = "White";
     protected static final int MIN_BOARD_SIZE = 15;
     protected static final int MAX_BOARD_SIZE = 19;
-    protected static final String COMPUTER_TITLE = "Computer";
-    protected static final String USER_TITLE = "Human";
     protected static final int WINNING_STRIKE_LENGTH = 5;
     private boolean m_victoryAchieved;
     protected boolean isWhiteTurn;
-    protected IGoMokuView m_view;
     protected GoMokuGameType m_gameType;
     protected GameBoard m_gameBoard;
     protected Player[] m_players;
@@ -32,8 +29,7 @@ public abstract class GoMokuGame {
      * @throws	UserAbortException if user requested to quit 
      * 			(might happen while reading the board size input)
      */
-    public GoMokuGame(GoMokuGameType gameType, IGoMokuView view) throws UserAbortException{
-        m_view = view;
+    public GoMokuGame(GoMokuGameType gameType) {
         m_gameType = gameType;
         m_players = new Player[2];
         m_victoryAchieved = false;
@@ -44,9 +40,8 @@ public abstract class GoMokuGame {
         	
     }
 
-    private void initGame() throws UserAbortException {
+    private void initGame() {
     	
-//    	int boardSize = m_view.getBoardSize(MIN_BOARD_SIZE,MAX_BOARD_SIZE);
     	
         m_gameBoard = new GameBoard(MIN_BOARD_SIZE);
 
@@ -55,49 +50,34 @@ public abstract class GoMokuGame {
         case ComputerVSUser:     
     		m_players[WHITE_PLAYER_INDEX] = new ComputerPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
-                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+                       WHITE_PLAYER_TITLE);
         	
     		m_players[BLACK_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.BLACK_PLAYER_TITLE,
-                        GoMokuConsoleView.BLACK_PLAYER_MARK);
+                        BLACK_PLAYER_TITLE);
         	
-    		m_view.setPlayersTitle(USER_TITLE, COMPUTER_TITLE);
         	break;
         	
         case UserVSComputer:     
     		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
-                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+                        WHITE_PLAYER_TITLE);
     		
     		m_players[BLACK_PLAYER_INDEX] = new ComputerPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.BLACK_PLAYER_TITLE,
-                        GoMokuConsoleView.BLACK_PLAYER_MARK);
+                       BLACK_PLAYER_TITLE);
     		
-    		m_view.setPlayersTitle(COMPUTER_TITLE, USER_TITLE);
         	break;
         
         case UserVSUser:         
     		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.WHITE_PLAYER_TITLE,
-                        GoMokuConsoleView.WHITE_PLAYER_MARK);
+                        WHITE_PLAYER_TITLE);
     	
     		m_players[BLACK_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
-                        m_view,
-                        GoMokuConsoleView.BLACK_PLAYER_TITLE, 
-                        GoMokuConsoleView.BLACK_PLAYER_MARK);
+                        BLACK_PLAYER_TITLE);
         	
-    		m_view.setPlayersTitle(USER_TITLE, USER_TITLE);
     		break;
         }
         

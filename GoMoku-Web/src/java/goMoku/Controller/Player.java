@@ -1,7 +1,6 @@
 package goMoku.Controller;
 
 import goMoku.Model.GameBoard;
-import goMoku.View.IGoMokuView;
 import java.awt.Point;
 
 /**
@@ -11,17 +10,12 @@ import java.awt.Point;
 public abstract class Player {
 	
 	protected GameBoard m_board;
-	protected IGoMokuView m_view;
 	/** player's name */
 	protected String m_name;
-	/** player's mark on the game board */
-	protected char m_mark;
 
-	Player(GameBoard board, IGoMokuView view, String name, char mark) {
+	Player(GameBoard board, String name) {
 		m_board = board;
-		m_view = view;
 		m_name = name;
-		m_mark = mark;
 	}
 	
 	/**
@@ -30,14 +24,7 @@ public abstract class Player {
 	 * @throws UserAbortException any input operations done by the view 
 	 * 		 	object might throw this exception.
 	 */
-	abstract Point makeMove() throws UserAbortException;
-
-	/**
-	 *	@returns The players full title (contains players name and mark).  
-	 */
-    public String getFullPlayerTitle() {
-    	return String.format("%s (%c)", m_name, m_mark);
-    }
+	abstract Point makeMove();
 
     public String getName()
     {
