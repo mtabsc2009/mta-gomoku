@@ -3,9 +3,10 @@ package gomoku.Controller;
 import gomoku.Model.GameBoard;
 import gomoku.Model.PawnType;
 import java.awt.Point;
+import java.io.Serializable;
 
 
-public abstract class GoMokuGame {
+public abstract class GoMokuGame implements Serializable {
 
     // Constants
     protected static final int WHITE_PLAYER_INDEX = 0;
