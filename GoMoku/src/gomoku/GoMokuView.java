@@ -16,6 +16,7 @@ import java.awt.Point;
 
 
 import gomoku.Controller.GoMokuGameType;
+import java.awt.Color;
 /**
  * The application's main frame.
  */
@@ -29,29 +30,68 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
     public GoMokuView(SingleFrameApplication app) {
         super(app);
         initComponents();
-        
         gameBoardView.registerMoveHandler(this);
-        gameBoardView.initBoard();
         
         game = new GoMokuWebGame(GoMokuGameType.UserVSUser);
-        
-    
+
+        this.getFrame().setTitle("GoMoku Game");
+        this.getFrame().setResizable(false);
+        gameBoardView.initBoard();
+        startNewGameButtonActionPerformed(new java.awt.event.ActionEvent(this, 0, ""));
+    }
+
+
+    public void newGame(GoMokuGameType type)
+    {
+        currentPlayerText.setText("Current Player:");
+        currentPlayerText.setVisible(true);
+        gameOverText.setVisible(false);
+
+        this.gameBoardView.resetBoard();
+        game = new GoMokuWebGame(type);
+        if (type == type.ComputerVSUser)
+        {
+            game.makeFirstComputerMove();
+        }
+        updateGameView();
     }
 
 
     public void makeMove(Point location) {
-        JOptionPane.showMessageDialog(null,"make move was called");
-        
         game.makeMove(location);
 
-        // update GUI
+        // If the move ended the game
+        if (game.isGameOver())
+        {
+            // Not victory attribute and winner if not tie
+            boolean victoryAchieved = game.getVictoryAchieved();
+            if (victoryAchieved)
+            {
+                String winnerName = game.getWinner().getName();
+                Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
+                currentPlayer.setBackground(winnerColor);
+                gameOverText.setText(winnerName + " Wins!");
+            }
+            else
+            {
+                gameOverText.setText("Game over with a tie!");
+            }
+            gameOverText.setVisible(true);
+            currentPlayerText.setVisible(false);
+            JOptionPane.showMessageDialog(null, gameOverText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
 
-        
+        }
+
+        // update GUI
+        updateGameView();
     }
 
-    public void newGame(GoMokuGameType type) {
-        game = new GoMokuWebGame(type);
+    private void updateGameView()
+    {
+        this.gameBoardView.updateBoardView(game);
 
+        Color player = game.getCurrPlayer().getName().compareTo("White") == 0 ? Color.white : Color.black;
+        this.currentPlayer.setBackground(player);
     }
     
      private  Point convertStringToMove(String input)
@@ -136,6 +176,9 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
         moveLocationString = new javax.swing.JTextField();
         makeMoveButton = new javax.swing.JButton();
         startNewGameButton = new javax.swing.JButton();
+        currentPlayer = new javax.swing.JPanel();
+        currentPlayerText = new javax.swing.JTextField();
+        gameOverText = new javax.swing.JTextField();
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
@@ -159,11 +202,11 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
         gameBoardView.setLayout(gameBoardViewLayout);
         gameBoardViewLayout.setHorizontalGroup(
             gameBoardViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 494, Short.MAX_VALUE)
+            .addGap(0, 483, Short.MAX_VALUE)
         );
         gameBoardViewLayout.setVerticalGroup(
             gameBoardViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGap(0, 504, Short.MAX_VALUE)
         );
 
         jLabel2.setName("jLabel2"); // NOI18N
@@ -187,6 +230,30 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
             }
         });
 
+        currentPlayer.setBorder(new javax.swing.border.LineBorder(resourceMap.getColor("currentPlayer.border.lineColor"), 1, true)); // NOI18N
+        currentPlayer.setName("currentPlayer"); // NOI18N
+
+        javax.swing.GroupLayout currentPlayerLayout = new javax.swing.GroupLayout(currentPlayer);
+        currentPlayer.setLayout(currentPlayerLayout);
+        currentPlayerLayout.setHorizontalGroup(
+            currentPlayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 22, Short.MAX_VALUE)
+        );
+        currentPlayerLayout.setVerticalGroup(
+            currentPlayerLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 22, Short.MAX_VALUE)
+        );
+
+        currentPlayerText.setEditable(false);
+        currentPlayerText.setText(resourceMap.getString("currentPlayerText.text")); // NOI18N
+        currentPlayerText.setBorder(null);
+        currentPlayerText.setName("currentPlayerText"); // NOI18N
+
+        gameOverText.setEditable(false);
+        gameOverText.setText(resourceMap.getString("gameOverText.text")); // NOI18N
+        gameOverText.setBorder(null);
+        gameOverText.setName("gameOverText"); // NOI18N
+
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
         mainPanelLayout.setHorizontalGroup(
@@ -194,19 +261,25 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(gameBoardView, javax.swing.GroupLayout.DEFAULT_SIZE, 494, Short.MAX_VALUE)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addComponent(gameTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(startNewGameButton))
+                    .addComponent(gameBoardView, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
                     .addGroup(mainPanelLayout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(makeMoveButton)))
+                        .addComponent(makeMoveButton)
+                        .addGap(32, 32, 32)
+                        .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(currentPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(5, 5, 5)
+                        .addComponent(gameOverText, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(18, 18, 18)
+                        .addComponent(gameTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(startNewGameButton)))
                 .addContainerGap())
         );
         mainPanelLayout.setVerticalGroup(
@@ -218,12 +291,22 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
                     .addComponent(gameTypeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(startNewGameButton))
                 .addGap(18, 18, 18)
-                .addComponent(gameBoardView, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(makeMoveButton)
-                    .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(gameBoardView, javax.swing.GroupLayout.DEFAULT_SIZE, 504, Short.MAX_VALUE)
+                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel2)
+                                .addComponent(makeMoveButton)
+                                .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(currentPlayer, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(gameOverText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(mainPanelLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -235,18 +318,21 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(gomoku.GoMokuApp.class).getContext().getActionMap(GoMokuView.class, this);
         newMenuItem.setAction(actionMap.get("startNewGame")); // NOI18N
         newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newMenuItem.setMnemonic('N');
         newMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
 
         openMenuItem.setAction(actionMap.get("openGame")); // NOI18N
         openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        openMenuItem.setMnemonic('O');
         openMenuItem.setText(resourceMap.getString("openMenuItem.text")); // NOI18N
         openMenuItem.setName("openMenuItem"); // NOI18N
         fileMenu.add(openMenuItem);
 
         saveMenuItem.setAction(actionMap.get("saveGame")); // NOI18N
         saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        saveMenuItem.setMnemonic('S');
         saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
         saveMenuItem.setName("saveMenuItem"); // NOI18N
         fileMenu.add(saveMenuItem);
@@ -273,7 +359,7 @@ public class GoMokuView extends FrameView implements GoMokuEvents {
 private void makeMoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_makeMoveButtonActionPerformed
     Point move = convertStringToMove(moveLocationString.getText());
     if (move != null) {
-        makeMove(move);;
+        makeMove(move);
     } else {
         JOptionPane.showMessageDialog(null,"Invalid move was entered.");
     }
@@ -352,7 +438,10 @@ private GoMokuGameType convertStringToGameType(String str) {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel currentPlayer;
+    private javax.swing.JTextField currentPlayerText;
     private gomoku.GameBoardView gameBoardView;
+    private javax.swing.JTextField gameOverText;
     private javax.swing.JComboBox gameTypeComboBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

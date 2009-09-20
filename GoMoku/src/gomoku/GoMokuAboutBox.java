@@ -73,7 +73,6 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
         appHomepageLabel.setText(resourceMap.getString("Application.homepage")); // NOI18N
         appHomepageLabel.setName("appHomepageLabel"); // NOI18N
 
-        appDescLabel.setFont(resourceMap.getFont("appDescLabel.font")); // NOI18N
         appDescLabel.setText(resourceMap.getString("appDescLabel.text")); // NOI18N
         appDescLabel.setName("appDescLabel"); // NOI18N
 
@@ -85,8 +84,9 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(imageLabel)
-                .addGap(18, 18, 18)
+                .addContainerGap()
+                .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -99,13 +99,12 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
                             .addComponent(appVendorLabel)
                             .addComponent(appHomepageLabel)))
                     .addComponent(appTitleLabel, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 802, Short.MAX_VALUE)
+                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
                     .addComponent(closeButton))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 191, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(appTitleLabel)
@@ -126,6 +125,7 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
                 .addGap(47, 47, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
+            .addComponent(imageLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 191, Short.MAX_VALUE)
         );
 
         pack();
