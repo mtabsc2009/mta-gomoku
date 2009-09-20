@@ -6,6 +6,7 @@
 
 package gomoku;
 
+import gomoku.Controller.GoMokuWebGame;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -13,6 +14,7 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
 import javax.swing.border.Border;
+import gomoku.Model.*;
 
 public class GameBoardView extends javax.swing.JPanel {
 
@@ -26,7 +28,7 @@ public class GameBoardView extends javax.swing.JPanel {
       public GameBoardView() {
         
         initComponents();
-        
+        boardCells = new BoardCell[rows+1][cols+1];
       }            
       
       public void initBoard() {
@@ -39,21 +41,60 @@ public class GameBoardView extends javax.swing.JPanel {
                     if (i*j ==0) {
                         c.setBgColor(new Color(0,150,255));
                     } else {
-                        
+
                         c.addMouseListener(new CellAdapter(gameEvent, new Point(i,j)));
-                        
+
                         if (i %2 ==0) {
                             c.setBgColor(Color.GREEN);
                         } else {
                         c.setBgColor(new Color(0,200,0));
                         }
                     }
-                    
+
+                    c.updateUI();
                     add(c);
+                    boardCells[i][j] = c;
                 }
             }
-          
+      }
 
+    public void resetBoard()
+    {
+        for (int i = 1 ; i < cols+1; ++i)
+        {
+            for (int j = 1 ; j < rows+1; ++j)
+            {
+                BoardCell c = boardCells[i][j];
+
+                if (i %2 ==0)
+                {
+                    c.setBgColor(Color.GREEN);
+                }
+                else
+                {
+                    c.setBgColor(new Color(0,200,0));
+                }
+
+                c.updateUI();
+            }
+        }
+    }
+
+      public void updateBoardView(GoMokuWebGame game)
+      {
+          GameBoard board = game.getGameBoard();
+          for (int i = 0; i < cols+1; i++)
+          {
+              for (int j=0; j<rows+1; j++)
+              {
+                  if (board.getPawnType(i, j) != null)
+                  {
+                      Color c = board.getPawnType(i, j) == PawnType.Black ? Color.black : Color.white;
+                      this.boardCells[j][i].setBgColor(c);
+                      this.boardCells[j][i].updateUI();
+                  }
+              }
+          }
       }
 
     @Override
