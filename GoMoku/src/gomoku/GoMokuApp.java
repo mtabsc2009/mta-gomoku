@@ -16,7 +16,7 @@ public class GoMokuApp extends SingleFrameApplication {
      * At startup create and show the main frame of the application.
      */
     @Override protected void startup() {
-        show(new GoMokuView(this));
+        show(new GoMokuAppView(this));
     }
 
     /**

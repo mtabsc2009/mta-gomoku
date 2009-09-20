@@ -8,20 +8,23 @@ package gomoku;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.Point;
+import java.util.LinkedList;
+import java.util.ListIterator;
 
 public class CellAdapter extends MouseAdapter {
-    private GoMokuEvents handler = null;
+    private LinkedList<GoMokuActionListener> handlerList;
     private Point location = null;
     
-    public CellAdapter(GoMokuEvents handler, Point loc) {
-        this.handler = handler;
+    public CellAdapter(LinkedList<GoMokuActionListener> handlerList, Point loc) {
+        this.handlerList = handlerList;
         location = loc;
     }
     
     @Override
     public void mouseClicked (MouseEvent e) {
-        if (handler!=null) {
-            handler.makeMove(location);
+        ListIterator<GoMokuActionListener> itr = handlerList.listIterator();
+        while (itr.hasNext()) {
+            itr.next().makeMove(location);
         }
     }
 }

@@ -6,22 +6,19 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuWebGame;
+import gomoku.Controller.GoMokuGame;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Insets;
 import java.awt.Point;
-import javax.swing.border.Border;
 import gomoku.Model.*;
+import java.util.LinkedList;
 
 public class GameBoardView extends javax.swing.JPanel {
 
     BoardCell boardCells[][];
     static final int CELL_SIZE = 30;
     int rows=15, cols=15;
-    GoMokuEvents gameEvent = null;
+    
+  //  GoMokuEvents gameEvent = null;
             
     /** Creates new form GameBoardView */
    
@@ -31,7 +28,7 @@ public class GameBoardView extends javax.swing.JPanel {
         boardCells = new BoardCell[rows+1][cols+1];
       }            
       
-      public void initBoard() {
+      public void initBoard(LinkedList<GoMokuActionListener> gomokuEventslisteners) {
           
           for (int i = 0 ; i < cols+1; ++i) {
                 for (int j = 0 ; j < rows+1; ++j) {
@@ -42,7 +39,7 @@ public class GameBoardView extends javax.swing.JPanel {
                         c.setBgColor(new Color(0,150,255));
                     } else {
 
-                        c.addMouseListener(new CellAdapter(gameEvent, new Point(i,j)));
+                        c.addMouseListener(new CellAdapter(gomokuEventslisteners, new Point(i,j)));
 
                         if (i %2 ==0) {
                             c.setBgColor(Color.GREEN);
@@ -80,7 +77,7 @@ public class GameBoardView extends javax.swing.JPanel {
         }
     }
 
-      public void updateBoardView(GoMokuWebGame game)
+      public void updateBoardView(GoMokuGame game)
       {
           GameBoard board = game.getGameBoard();
           for (int i = 0; i < cols+1; i++)
@@ -96,19 +93,6 @@ public class GameBoardView extends javax.swing.JPanel {
               }
           }
       }
-
-    @Override
-    public Dimension getPreferredSize() {
-        //return super.getPreferredSize();
-        int h = (rows+1)*CELL_SIZE + rows;
-        int w = (cols+1)*CELL_SIZE + cols;
-        return new Dimension(w,h);
-    }
-    
-      
-    public void registerMoveHandler(GoMokuEvents evt) {
-        gameEvent = evt;
-    }
 
     
     /** This method is called from within the constructor to

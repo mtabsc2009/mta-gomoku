@@ -1,13 +1,14 @@
 package gomoku.Model;
 
 import java.awt.Point;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
 /**
  * The game board of the GoMoku Game
  */
-public class GameBoard {
+public class GameBoard implements Serializable{
 
     // Constants
     public static final char BOARD_START_COLUMN = 'A';

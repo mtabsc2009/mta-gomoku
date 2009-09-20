@@ -2,12 +2,13 @@ package gomoku.Controller;
 
 import gomoku.Model.GameBoard;
 import java.awt.Point;
+import java.io.Serializable;
 
 /**
  * Player is an abstract class. 
  * The derived class is required to implement the makeMove method. 
  */
-public abstract class Player {
+public abstract class Player implements Serializable{
 	
 	protected GameBoard m_board;
 	/** player's name */

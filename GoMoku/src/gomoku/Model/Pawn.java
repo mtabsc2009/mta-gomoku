@@ -1,12 +1,13 @@
 package gomoku.Model;
 
 import java.awt.Point;
+import java.io.Serializable;
 
 
 /**
  * The simple pawn of the game
  */
-public class Pawn {
+public class Pawn implements Serializable{
 
     private int m_sequence;
     private PawnType m_type;   
