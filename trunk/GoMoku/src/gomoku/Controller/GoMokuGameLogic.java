@@ -1,14 +1,14 @@
 package gomoku.Controller;
 
 import java.awt.Point;
+import java.io.Serializable;
 
+public class GoMokuGameLogic extends GoMokuGame implements Serializable{
 
-public class GoMokuWebGame extends GoMokuGame {
-
-    public GoMokuWebGame(GoMokuGameType gameType) {
+    public GoMokuGameLogic(GoMokuGameType gameType) {
         super(gameType);
     }
-
+    
     private void makeComputerMove(int nextPlayer) {
         if (m_players[nextPlayer] instanceof ComputerPlayer) {
              

@@ -7,8 +7,9 @@ package gomoku;
 
 import gomoku.Controller.GoMokuGameType;
 import java.awt.Point;
+import java.util.EventListener;
 
-public interface GoMokuEvents {
+public interface GoMokuActionListener extends EventListener{
     public void makeMove(Point location);
     public void newGame(GoMokuGameType type);
 }
