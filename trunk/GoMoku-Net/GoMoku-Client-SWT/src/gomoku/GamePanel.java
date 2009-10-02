@@ -159,17 +159,23 @@ private  Point convertStringToMove(String input)
     
     public void newGame(GoMokuGameType type)
     {
-        
         currentPlayerText.setText("Current Player:");
         currentPlayerText.setVisible(true);
         gameOverText.setVisible(false);
 
         this.gameBoardView.resetBoard();
-        game = new GoMokuGameLogic(type);
-        if (type == type.ComputerVSUser)
+        try
         {
-            game.makeFirstComputerMove();
+            game = new GoMokuGameLogic(type);
+            String players = game.getAvailablePlayers();
+            JOptionPane.showMessageDialog(null,players);
+
         }
+        catch (Exception e)
+        {
+            int a =  1;
+        }
+
         updateGameView();
         
     

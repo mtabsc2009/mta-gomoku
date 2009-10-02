@@ -3,6 +3,8 @@ package gomoku.NetServer;
 import gomoku.Controller.*;
 import gomoku.Model.*;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -27,12 +29,15 @@ public class GoMokuServer
     {
         ServerSocket serverSocket = null;
         try {
+            // Start listening and wait for players
             serverSocket = new ServerSocket(GOMOKU_SERVER_PORT);
             System.out.println("Server is ready...");
             for (int clientID = 1; ;clientID++)
             {
+                // When a new player connects
                 try
                 {
+                    // Accept it and add it to the server
                     Socket clientSocket = serverSocket.accept();
                     connectNewClient(clientID, clientSocket);
                     System.out.println("Player #" + clientID + " has connected");
@@ -55,6 +60,7 @@ public class GoMokuServer
 
     private void connectNewClient(int clientID, Socket clientSocket)
     {
+        // Add the user to the list and welcome it
         NetClient newClient = new NetClient(clientID, clientSocket);
         m_FreeClientsTable.put(new Integer(clientID), newClient);
         sendWelcome(newClient);
@@ -69,7 +75,7 @@ public class GoMokuServer
         StringBuilder availablePlayers = new StringBuilder(m_FreeClientsTable.size());
 
         // If there are no users - send empty
-        if (m_CurrentGames.size() == 1)
+        if (m_FreeClientsTable.size() == 1)
         {
             availablePlayers.append(PROTOCOL_NO_CLIENTS);
         }
@@ -84,6 +90,7 @@ public class GoMokuServer
                 if (currClient.getClientID() != newClient.getClientID())
                 {
                     availablePlayers.append(currClient.getClientID());
+                    availablePlayers.append(" (" + currClient.getSocket().getRemoteSocketAddress().toString() + ")");
                     availablePlayers.append(PROTOCOL_CLIENT_SEPARATOR);
                 }
             }
@@ -92,7 +99,8 @@ public class GoMokuServer
         // Sennd the players list
         try
         {
-            clientSocket.getOutputStream().write(availablePlayers.toString().getBytes());
+            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
+            out.writeObject(availablePlayers.toString());
         }
         catch (Exception ex)
         {
