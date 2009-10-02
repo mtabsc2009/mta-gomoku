@@ -6,7 +6,7 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuGame;
+import gomoku.NetworkAdapter.*;
 import java.awt.Color;
 import java.awt.Point;
 import gomoku.Model.*;
@@ -77,7 +77,7 @@ public class GameBoardView extends javax.swing.JPanel {
         }
     }
 
-      public void updateBoardView(GoMokuGame game)
+      public void updateBoardView(GoMokuGameLogic game)
       {
           GameBoard board = game.getGameBoard();
           for (int i = 0; i < cols+1; i++)

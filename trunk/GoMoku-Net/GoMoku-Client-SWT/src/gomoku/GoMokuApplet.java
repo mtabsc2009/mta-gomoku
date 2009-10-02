@@ -6,8 +6,8 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuGameLogic;
-import gomoku.Controller.GoMokuGameType;
+import gomoku.NetworkAdapter.GoMokuGameLogic;
+import gomoku.Model.GoMokuGameType;
 
 public class GoMokuApplet extends javax.swing.JApplet {
 

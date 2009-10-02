@@ -6,11 +6,11 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuGameLogic;
+import gomoku.NetworkAdapter.GoMokuGameLogic;
 import java.awt.Point;
 import java.awt.Color;
 import javax.swing.JOptionPane;
-import gomoku.Controller.GoMokuGameType;
+import gomoku.Model.GoMokuGameType;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
