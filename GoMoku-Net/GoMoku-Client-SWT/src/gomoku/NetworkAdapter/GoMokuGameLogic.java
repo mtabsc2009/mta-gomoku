@@ -7,6 +7,8 @@ package gomoku.NetworkAdapter;
 
 import gomoku.Model.*;
 import java.awt.Point;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.*;
 
 /**
@@ -15,17 +17,35 @@ import java.net.*;
  */
 public class GoMokuGameLogic implements IRemoteGameLogic
 {
-//    Socket m_Socket;
+    private final String GOMOKU_SERVER_ADDRESS = "127.0.0.1";
+    private final int GOMOKU_SERVER_PORT = 28800;
+    private final String PROTOCOL_CLIENT_SEPARATOR = ",";
+    private final String PROTOCOL_NO_CLIENTS = "NONE";
+
+    Socket m_Socket;
     GameBoard m_GameBoard;
     HumanPlayer m_Player;
+    private String m_PlayersFromServer;
 
-    public GoMokuGameLogic(GoMokuGameType type)
+    public GoMokuGameLogic(GoMokuGameType type) throws UnknownHostException, IOException, ClassNotFoundException
     {
         m_GameBoard = new GameBoard(15);
         m_Player = new HumanPlayer(m_GameBoard, "You");
-//        m_Socket = new Socket();
+        m_Socket = new Socket(GOMOKU_SERVER_ADDRESS, GOMOKU_SERVER_PORT);
+        getPlayersFromServer();
     }
 
+    private void connect() throws IOException, ClassNotFoundException
+    {
+        m_Socket.connect(m_Socket.getRemoteSocketAddress());
+
+    }
+
+    private void getPlayersFromServer() throws IOException, ClassNotFoundException
+    {
+        ObjectInputStream in = new ObjectInputStream(m_Socket.getInputStream());
+        m_PlayersFromServer = (String)in.readObject();
+    }
 
     public Player getCurrPlayer()
     {
@@ -75,6 +95,10 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     public void makeMove(Point move)
     {
+    }
+
+    public String getAvailablePlayers() {
+        return m_PlayersFromServer;
     }
 
 }
