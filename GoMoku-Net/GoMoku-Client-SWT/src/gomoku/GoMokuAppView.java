@@ -36,11 +36,9 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
     }
 
     public void makeMove(Point location) {
-        saveMenuItem.setEnabled(true);
     }
     
     public void newGame(GoMokuGameType type) {
-        saveMenuItem.setEnabled(false);
     }
     
     @Action
@@ -65,8 +63,6 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
         menuBar = new javax.swing.JMenuBar();
         javax.swing.JMenu fileMenu = new javax.swing.JMenu();
         newMenuItem = new javax.swing.JMenuItem();
-        openMenuItem = new javax.swing.JMenuItem();
-        saveMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenuItem exitMenuItem = new javax.swing.JMenuItem();
         javax.swing.JMenu helpMenu = new javax.swing.JMenu();
         javax.swing.JMenuItem aboutMenuItem = new javax.swing.JMenuItem();
@@ -80,23 +76,9 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(gomoku.GoMokuApp.class).getContext().getActionMap(GoMokuAppView.class, this);
         newMenuItem.setAction(actionMap.get("startNewGame")); // NOI18N
-        newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         newMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
-
-        openMenuItem.setAction(actionMap.get("openGame")); // NOI18N
-        openMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        openMenuItem.setText(resourceMap.getString("openMenuItem.text")); // NOI18N
-        openMenuItem.setName("openMenuItem"); // NOI18N
-        fileMenu.add(openMenuItem);
-
-        saveMenuItem.setAction(actionMap.get("saveGame")); // NOI18N
-        saveMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        saveMenuItem.setText(resourceMap.getString("saveMenuItem.text")); // NOI18N
-        saveMenuItem.setEnabled(false);
-        saveMenuItem.setName("saveMenuItem"); // NOI18N
-        fileMenu.add(saveMenuItem);
 
         exitMenuItem.setAction(actionMap.get("quit")); // NOI18N
         exitMenuItem.setName("exitMenuItem"); // NOI18N
@@ -125,56 +107,12 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
         gamePanel.newGame(GoMokuGameType.UserVSUser);
     }
 
-    @Action
-    public void openGame() {
-    
-        JFileChooser menu = new JFileChooser();
-        menu.setDialogType(JFileChooser.OPEN_DIALOG);
-        menu.setDialogTitle("Load Game");
 
-        int res = menu.showOpenDialog(null);
-            
-        if(res == JFileChooser.APPROVE_OPTION)
-        {
-                if(menu.getSelectedFile().exists())
-                {
-                    if (gamePanel.LoadGame(menu.getSelectedFile()) == true) {
-                        // disable the save option
-                        saveMenuItem.setEnabled(false);
-                    }                    
-                } else {
-                    JOptionPane.showMessageDialog(null,"Error opening game. File not found.");
-                }
-        }
-    }
-
-    @Action
-    public void saveGame() {
-        JFileChooser menu = new JFileChooser();
-        menu.setDialogType(JFileChooser.SAVE_DIALOG);
-        menu.setDialogTitle("Save Game");
-
-        int res = menu.showOpenDialog(null);
-            
-        if(res == JFileChooser.APPROVE_OPTION)
-        {
-                if(menu.getSelectedFile().exists())
-                {
-                    // file exists but we won't overwrite
-                    JOptionPane.showMessageDialog(null,"Error saving game. This file already exists.");
-                    //menu.getSelectedFile();
-                } else {
-                    gamePanel.SaveGame(menu.getSelectedFile());
-                }
-        }
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private gomoku.GamePanel gamePanel;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenuItem newMenuItem;
-    private javax.swing.JMenuItem openMenuItem;
-    private javax.swing.JMenuItem saveMenuItem;
     // End of variables declaration//GEN-END:variables
 
 
