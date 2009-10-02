@@ -1,4 +1,4 @@
-package gomoku.Controller;
+package gomoku.Model;
 
 import gomoku.Model.GameBoard;
 import java.awt.Point;
@@ -25,7 +25,7 @@ public abstract class Player implements Serializable{
 	 * @throws UserAbortException any input operations done by the view 
 	 * 		 	object might throw this exception.
 	 */
-	abstract Point makeMove();
+	public abstract Point makeMove();
 
     public String getName()
     {

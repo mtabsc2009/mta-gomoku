@@ -4,7 +4,7 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuGameLogic;
+import gomoku.NetworkAdapter.GoMokuGameLogic;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.SingleFrameApplication;
 import org.jdesktop.application.FrameView;
@@ -13,7 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import java.awt.Point;
-import gomoku.Controller.GoMokuGameType;
+import gomoku.Model.GoMokuGameType;
 
 
 /**

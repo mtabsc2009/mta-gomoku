@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package gomoku.Controller;
+package gomoku.Model;
 
 /**
  * Holds the supported game types:

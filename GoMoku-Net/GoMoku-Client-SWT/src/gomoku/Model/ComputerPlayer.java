@@ -1,4 +1,4 @@
-package gomoku.Controller;
+package gomoku.Model;
 
 import gomoku.Model.GameBoard;
 import java.awt.Point;

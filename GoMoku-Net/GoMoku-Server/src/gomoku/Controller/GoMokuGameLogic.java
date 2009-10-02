@@ -1,5 +1,8 @@
 package gomoku.Controller;
 
+import gomoku.Model.ComputerPlayer;
+import gomoku.Model.GoMokuGameType;
+import gomoku.Model.Player;
 import java.awt.Point;
 import java.io.Serializable;
 

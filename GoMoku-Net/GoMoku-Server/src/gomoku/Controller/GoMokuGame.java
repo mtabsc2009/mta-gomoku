@@ -1,5 +1,9 @@
 package gomoku.Controller;
 
+import gomoku.Model.ComputerPlayer;
+import gomoku.Model.HumanPlayer;
+import gomoku.Model.GoMokuGameType;
+import gomoku.Model.Player;
 import gomoku.Model.GameBoard;
 import gomoku.Model.PawnType;
 import java.awt.Point;

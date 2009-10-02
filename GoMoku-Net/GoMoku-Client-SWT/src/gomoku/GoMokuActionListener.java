@@ -5,7 +5,7 @@
 
 package gomoku;
 
-import gomoku.Controller.GoMokuGameType;
+import gomoku.Model.GoMokuGameType;
 import java.awt.Point;
 import java.util.EventListener;
 
