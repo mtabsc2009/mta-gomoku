@@ -21,18 +21,19 @@ import gomoku.Model.GoMokuGameType;
  */
 public class GoMokuAppView extends FrameView implements GoMokuActionListener {
 
+    public static JFrame topFrame;
 
     public GoMokuAppView(SingleFrameApplication app) {
         super(app);
         initComponents();
-                
-        this.getFrame().setTitle("GoMoku Game");
-        this.getFrame().setResizable(false);
+
+        GoMokuAppView.topFrame = this.getFrame();
+        GoMokuAppView.topFrame.setTitle("GoMoku Game");
+        GoMokuAppView.topFrame.setResizable(false);
 
         gamePanel.registerMoveHandler(gamePanel);
         gamePanel.registerMoveHandler(this);
         
-        gamePanel.newGame(GoMokuGameType.UserVSUser);
     }
 
     public void makeMove(Point location) {
