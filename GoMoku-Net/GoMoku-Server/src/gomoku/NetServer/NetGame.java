@@ -17,11 +17,25 @@ public class NetGame {
         m_GameSession = new GoMokuGameLogic(GoMokuGameType.UserVSUser);
     }
 
-    public NetClient getM_Client1() {
+    public NetClient geClient1() {
         return m_Client1;
     }
 
     public NetClient getClient2() {
         return m_Client2;
+    }
+
+    public void Terminate()
+    {
+        m_Client1.Terminate();
+        m_Client2.Terminate();
+        m_GameSession = null;
+    }
+
+    /**
+     * @return the m_GameSession
+     */
+    public GoMokuGameLogic getGameSession() {
+        return m_GameSession;
     }
 }

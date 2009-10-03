@@ -9,6 +9,7 @@ import gomoku.Model.*;
 import java.awt.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.*;
 
 /**
@@ -19,32 +20,82 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 {
     private final String GOMOKU_SERVER_ADDRESS = "127.0.0.1";
     private final int GOMOKU_SERVER_PORT = 28800;
-    private final String PROTOCOL_CLIENT_SEPARATOR = ",";
-    private final String PROTOCOL_NO_CLIENTS = "NONE";
+    public static final String PROTOCOL_CLIENT_SEPARATOR = ",";
+    public static final String PROTOCOL_NO_CLIENTS = "NONE";
 
-    Socket m_Socket;
-    GameBoard m_GameBoard;
-    HumanPlayer m_Player;
+    private Socket m_Socket;
+    private GameBoard m_GameBoard;
+    private HumanPlayer m_Player;
+    private String m_Player2;
     private String m_PlayersFromServer;
 
-    public GoMokuGameLogic(GoMokuGameType type) throws UnknownHostException, IOException, ClassNotFoundException
+    private boolean m_IsGameOver;
+    private boolean m_IsVictoryAcheaved;
+    private Player m_Winner;
+    
+    private ObjectInputStream m_inStream;
+    private ObjectOutputStream m_outStream;
+
+    public GoMokuGameLogic(GoMokuGameType type, String playerName) throws UnknownHostException, IOException, ClassNotFoundException
     {
         m_GameBoard = new GameBoard(15);
-        m_Player = new HumanPlayer(m_GameBoard, "You");
+        m_Player = new HumanPlayer(m_GameBoard, playerName);
+
+        m_IsGameOver = false;
+        m_IsVictoryAcheaved = false;
+        m_Winner = null;
+
         m_Socket = new Socket(GOMOKU_SERVER_ADDRESS, GOMOKU_SERVER_PORT);
+        m_inStream = new ObjectInputStream(m_Socket.getInputStream());
         getPlayersFromServer();
+        m_outStream = new ObjectOutputStream(m_Socket.getOutputStream()) ;
+        m_outStream.writeObject(playerName);
+        m_outStream.flush();
     }
 
-    private void connect() throws IOException, ClassNotFoundException
+    public void Terminate()
     {
-        m_Socket.connect(m_Socket.getRemoteSocketAddress());
+        try { m_inStream.close(); } catch (Exception ex) { ; }
+        try { m_outStream.close(); } catch (Exception ex) { ; }
+        try { m_Socket.close(); } catch (Exception ex) { ; }
+    }
 
+    public boolean choseOponent(String oponent)
+    {
+        boolean oponentChosen = false;
+        try
+        {
+            m_outStream.writeObject(oponent);
+            m_outStream.flush();
+            Boolean b = (Boolean)m_inStream.readObject();
+            oponentChosen = b.booleanValue();
+        }
+        catch (Exception e)
+        {
+        }
+
+        return oponentChosen;
+    }
+
+    public String waitForOponent() throws IOException, ClassNotFoundException
+    {
+        m_Player2 = m_inStream.readObject().toString();
+
+        // Confirm player
+        m_outStream.writeObject(m_Player2);
+        m_outStream.flush();
+
+        return m_Player2;
+    }
+
+    public void waitForMove() throws IOException, ClassNotFoundException
+    {
+        readBoard();
     }
 
     private void getPlayersFromServer() throws IOException, ClassNotFoundException
     {
-        ObjectInputStream in = new ObjectInputStream(m_Socket.getInputStream());
-        m_PlayersFromServer = (String)in.readObject();
+        m_PlayersFromServer = (String)m_inStream.readObject();
     }
 
     public Player getCurrPlayer()
@@ -54,9 +105,8 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     public Player getWinner()
     {
-        return null;
+        return m_Winner;
     }
-
 
     public GameBoard getGameBoard()
     {
@@ -80,12 +130,12 @@ public class GoMokuGameLogic implements IRemoteGameLogic
      */
     public boolean isGameOver()
     {
-        return false;
+        return m_IsGameOver;
     }
 
     public boolean getVictoryAchieved()
     {
-        return false;
+        return m_IsVictoryAcheaved;
     }
 
 
@@ -93,12 +143,39 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     {
     }
 
-    public void makeMove(Point move)
+    public void makeMove(Point move) throws IOException, ClassNotFoundException
     {
+        m_outStream.writeObject(move);
+        m_outStream.flush();
+        readBoard();
     }
 
     public String getAvailablePlayers() {
         return m_PlayersFromServer;
     }
 
+    private void readBoard() throws IOException, ClassNotFoundException
+    {
+        m_GameBoard = null;
+        m_GameBoard = (GameBoard)m_inStream.readObject();
+        readGameStats();
+    }
+    
+    private void readGameStats() throws IOException, ClassNotFoundException
+    {
+        // Send the status of the game
+        m_IsGameOver = ((Boolean)m_inStream.readObject()).booleanValue();
+
+        // If the game is over - send the victory
+        if (m_IsGameOver)
+        {
+            m_IsVictoryAcheaved = ((Boolean)m_inStream.readObject()).booleanValue();
+
+            // If there was a victory - send the winner
+            if (m_IsVictoryAcheaved)
+            {
+                m_Winner = (Player)m_inStream.readObject();
+            }
+        }
+    }
 }

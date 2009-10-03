@@ -7,7 +7,7 @@ public final class ServerMain
 {
 //    private ServerThread waitingThread;
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws IOException
     {
         GoMokuServer gameServer = new GoMokuServer();
         gameServer.startServer();
