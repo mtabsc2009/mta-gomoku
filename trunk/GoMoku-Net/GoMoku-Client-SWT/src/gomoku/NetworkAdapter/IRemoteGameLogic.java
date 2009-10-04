@@ -7,11 +7,12 @@ import java.io.IOException;
 public interface IRemoteGameLogic {
 
     boolean choseOponent(String oponent);
-    String waitForOponent() throws IOException, ClassNotFoundException;
+    Player waitForOponent() throws IOException, ClassNotFoundException;
     void waitForMove() throws IOException, ClassNotFoundException;
     void Terminate();
     String getAvailablePlayers();
 
+    Player getMyPlayer();
     Player getCurrPlayer();
     Player getWinner();
 

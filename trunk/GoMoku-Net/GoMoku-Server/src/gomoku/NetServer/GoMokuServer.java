@@ -102,7 +102,7 @@ public class GoMokuServer
             {
                 error = "(" + e.getMessage() + ")";
             }
-            System.out.println(String.format("Client %s has disconnected. %s", client.getFullName(), error));
+            System.out.println(String.format("Client %s has disconnected. %s", client.getClientFullName(), error));
         }
         catch (Exception ex)
         {
@@ -132,7 +132,7 @@ public class GoMokuServer
                 // Add the players to the list except the new player itself
                 if (currClient.getClientID() != newClient.getClientID())
                 {
-                    availablePlayers.append(currClient.getFullName());
+                    availablePlayers.append(currClient.getClientFullName());
                     availablePlayers.append(PROTOCOL_CLIENT_SEPARATOR);
                 }
             }
@@ -167,7 +167,7 @@ public class GoMokuServer
             client1.setGame(newGame);
             client2.setGame(newGame);
             gameStarted = true;
-            System.out.println("New game starting: " + player1.getFullName());
+            System.out.println("New game starting: " + player1.getClientFullName());
         }
 
         return gameStarted;
