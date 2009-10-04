@@ -15,6 +15,8 @@ public class NetGame {
         m_Client1 = client1;
         m_Client2 = client2;
         m_GameSession = new GoMokuGameLogic(GoMokuGameType.UserVSUser);
+        m_GameSession.getPlayer(GoMokuGame.WHITE_PLAYER_INDEX).setUserName(client1.getClientUsername());
+        m_GameSession.getPlayer(GoMokuGame.BLACK_PLAYER_INDEX).setUserName(client2.getClientUsername());
     }
 
     public NetClient geClient1() {

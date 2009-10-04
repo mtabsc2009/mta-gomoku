@@ -185,15 +185,22 @@ private  Point convertStringToMove(String input)
                 String winnerName = game.getWinner().getName();
                 Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
                 currentPlayer.setBackground(winnerColor);
-                gameOverText.setText(winnerName + " Wins!");
+                gameStatText.setText(winnerName + " Wins!");
             }
             else
             {
-                gameOverText.setText("Game over with a tie!");
+                gameStatText.setText("Game over with a tie!");
             }
-            gameOverText.setVisible(true);
+            gameStatText.setVisible(true);
             currentPlayerText.setVisible(false);
-            JOptionPane.showMessageDialog(null, gameOverText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, gameStatText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            String whosTurn = game.getCurrPlayer().getName().compareTo(game.getMyPlayer().getName()) == 0  ?
+                "Youre Move" : "Wait for move";
+            gameStatText.setText(whosTurn);
+            gameStatText.setVisible(true);
         }
     }
 
@@ -241,7 +248,7 @@ private  Point convertStringToMove(String input)
     {
         currentPlayerText.setText("Current Player:");
         currentPlayerText.setVisible(true);
-        gameOverText.setVisible(false);
+        gameStatText.setVisible(false);
 
         disableGame();
 
@@ -261,8 +268,10 @@ private  Point convertStringToMove(String input)
             // If there are no players - wailt for players
             if (players.compareToIgnoreCase(GoMokuGameLogic.PROTOCOL_NO_CLIENTS) == 0)
             {
-                JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
-            }
+                gameStatText.setText("Waiting for player");
+                gameStatText.setVisible(true);
+                 JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
+           }
             else
             {
                 // Chose an oponent
@@ -277,13 +286,17 @@ private  Point convertStringToMove(String input)
             if (bGotGame)
             {
 //                JOptionPane.showMessageDialog(null, "Got game");
+                gameStatText.setText("Youre move");
+                gameStatText.setVisible(true);
                 enableGame();
                 game.waitForMove();
             }
             // Waiting for someone to start a game with me
             else
             {
-                String oponent = game.waitForOponent();
+                game.waitForOponent();
+                gameStatText.setText("Wait for move");
+                gameStatText.setVisible(true);
 //                JOptionPane.showMessageDialog(null, "Got game from " + oponent);
 
                 game.waitForMove();
@@ -293,19 +306,8 @@ private  Point convertStringToMove(String input)
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(this, "Cannot connect to server", "Connection Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        
-    
-//        ListIterator<GoMokuActionListener> itr = gameActionsListeners.listIterator();
-//        while (itr.hasNext()) {
-//            GoMokuActionListener l =itr.next();
-//            if (l != this) {
-//                l.newGame(type);
-//            }
-//        }
-        
+            JOptionPane.showMessageDialog(this, "Cannot connect to server " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }     
     }
 
     private String choseOponent(String players)
@@ -342,7 +344,7 @@ private  Point convertStringToMove(String input)
         makeMoveButton = new javax.swing.JButton();
         currentPlayer = new javax.swing.JPanel();
         currentPlayerText = new javax.swing.JTextField();
-        gameOverText = new javax.swing.JTextField();
+        gameStatText = new javax.swing.JTextField();
         playerName = new javax.swing.JTextField();
         playerTitle = new javax.swing.JTextField();
 
@@ -397,10 +399,10 @@ private  Point convertStringToMove(String input)
         currentPlayerText.setBorder(null);
         currentPlayerText.setName("currentPlayerText"); // NOI18N
 
-        gameOverText.setEditable(false);
-        gameOverText.setText(resourceMap.getString("gameOverText.text")); // NOI18N
-        gameOverText.setBorder(null);
-        gameOverText.setName("gameOverText"); // NOI18N
+        gameStatText.setEditable(false);
+        gameStatText.setText(resourceMap.getString("gameStatText.text")); // NOI18N
+        gameStatText.setBorder(null);
+        gameStatText.setName("gameStatText"); // NOI18N
 
         playerName.setText(resourceMap.getString("playerName.text")); // NOI18N
         playerName.setName("playerName"); // NOI18N
@@ -416,58 +418,51 @@ private  Point convertStringToMove(String input)
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(makeMoveButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2)
+                .addComponent(currentPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(7, 7, 7)
+                .addComponent(gameStatText, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(playerTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(playerName, javax.swing.GroupLayout.DEFAULT_SIZE, 84, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(gameBoardView, javax.swing.GroupLayout.PREFERRED_SIZE, 486, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(4, 4, 4)
-                        .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(makeMoveButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(currentPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(88, 88, 88)
-                        .addComponent(gameOverText, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(7, 7, 7)
-                        .addComponent(playerTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 66, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(playerName)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel1)))
+            .addComponent(gameBoardView, javax.swing.GroupLayout.PREFERRED_SIZE, 486, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(gameBoardView, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(gameBoardView, javax.swing.GroupLayout.PREFERRED_SIZE, 490, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(makeMoveButton)
                                     .addComponent(moveLocationString, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(currentPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(gameOverText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(playerTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(playerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(8, 8, 8))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(514, 514, 514)
-                        .addComponent(jLabel2)))
+                                    .addComponent(makeMoveButton)
+                                    .addComponent(currentPlayerText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(1, 1, 1)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(gameStatText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(playerTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(playerName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(7, 7, 7)
+                        .addComponent(currentPlayer, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -485,7 +480,7 @@ private  Point convertStringToMove(String input)
     private javax.swing.JPanel currentPlayer;
     private javax.swing.JTextField currentPlayerText;
     private gomoku.GameBoardView gameBoardView;
-    private javax.swing.JTextField gameOverText;
+    private javax.swing.JTextField gameStatText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JButton makeMoveButton;

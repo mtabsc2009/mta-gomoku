@@ -25,13 +25,14 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     private Socket m_Socket;
     private GameBoard m_GameBoard;
-    private HumanPlayer m_Player;
-    private String m_Player2;
+    private Player m_Player;
+    private Player m_Oponent;
     private String m_PlayersFromServer;
 
     private boolean m_IsGameOver;
     private boolean m_IsVictoryAcheaved;
     private Player m_Winner;
+    private Player m_CurrPlayer;
     
     private ObjectInputStream m_inStream;
     private ObjectOutputStream m_outStream;
@@ -44,6 +45,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_IsGameOver = false;
         m_IsVictoryAcheaved = false;
         m_Winner = null;
+        m_CurrPlayer = m_Player;
 
         m_Socket = new Socket(GOMOKU_SERVER_ADDRESS, GOMOKU_SERVER_PORT);
         m_inStream = new ObjectInputStream(m_Socket.getInputStream());
@@ -69,6 +71,10 @@ public class GoMokuGameLogic implements IRemoteGameLogic
             m_outStream.flush();
             Boolean b = (Boolean)m_inStream.readObject();
             oponentChosen = b.booleanValue();
+            if (oponentChosen)
+            {
+                m_Oponent = (Player)m_inStream.readObject();
+            }
         }
         catch (Exception e)
         {
@@ -77,16 +83,22 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         return oponentChosen;
     }
 
-    public String waitForOponent() throws IOException, ClassNotFoundException
+    public Player waitForOponent() throws IOException, ClassNotFoundException
     {
-        m_Player2 = m_inStream.readObject().toString();
+        m_Oponent = (Player)m_inStream.readObject();
 
         // Confirm player
-        m_outStream.writeObject(m_Player2);
+        m_outStream.writeObject(m_Oponent);
         m_outStream.flush();
 
-        return m_Player2;
+        return m_Oponent;
     }
+    
+    public Player getMyPlayer()
+    {
+        return m_Player;
+    }
+
 
     public void waitForMove() throws IOException, ClassNotFoundException
     {
@@ -100,7 +112,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     public Player getCurrPlayer()
     {
-        return m_Player;
+        return m_CurrPlayer;
     }
 
     public Player getWinner()
@@ -164,6 +176,12 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     private void readGameStats() throws IOException, ClassNotFoundException
     {
         // Send the status of the game
+        m_CurrPlayer = (Player)m_inStream.readObject();
+        if (m_Oponent != null && m_Oponent.getName().compareTo(m_CurrPlayer.getName()) != 0)
+        {
+            m_Player = m_CurrPlayer;
+        }
+
         m_IsGameOver = ((Boolean)m_inStream.readObject()).booleanValue();
 
         // If the game is over - send the victory

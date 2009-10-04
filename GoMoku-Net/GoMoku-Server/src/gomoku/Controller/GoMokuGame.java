@@ -13,8 +13,8 @@ import java.io.Serializable;
 public abstract class GoMokuGame implements Serializable {
 
     // Constants
-    protected static final int WHITE_PLAYER_INDEX = 0;
-    protected static final int BLACK_PLAYER_INDEX = 1;
+    public static final int WHITE_PLAYER_INDEX = 0;
+    public static final int BLACK_PLAYER_INDEX = 1;
     protected static String BLACK_PLAYER_TITLE = "Black";
     protected static String WHITE_PLAYER_TITLE = "White";
     protected static final int MIN_BOARD_SIZE = 15;
@@ -189,6 +189,11 @@ public abstract class GoMokuGame implements Serializable {
     	 }
     			
     	 return foundRow;
+    }
+
+    public Player getPlayer(int playerIndex)
+    {
+        return m_players[playerIndex];
     }
     
     public boolean getVictoryAchieved() {
