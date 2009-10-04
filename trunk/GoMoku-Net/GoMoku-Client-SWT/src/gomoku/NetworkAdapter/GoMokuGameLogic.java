@@ -168,9 +168,14 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     private void readBoard() throws IOException, ClassNotFoundException
     {
+        readBoardView();
+        readGameStats();
+    }
+
+    private void readBoardView() throws IOException, ClassNotFoundException
+    {
         m_GameBoard = null;
         m_GameBoard = (GameBoard)m_inStream.readObject();
-        readGameStats();
     }
     
     private void readGameStats() throws IOException, ClassNotFoundException
@@ -194,6 +199,9 @@ public class GoMokuGameLogic implements IRemoteGameLogic
             {
                 m_Winner = (Player)m_inStream.readObject();
             }
+
+            try { readBoardView(); }
+            catch (Exception e) { }
         }
     }
 }

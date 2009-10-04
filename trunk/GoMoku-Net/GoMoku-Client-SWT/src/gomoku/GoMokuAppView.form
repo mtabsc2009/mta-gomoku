@@ -26,6 +26,10 @@
                 <Property name="action" type="javax.swing.Action" editor="org.netbeans.modules.swingapp.ActionEditor">
                   <action class="gomoku.GoMokuView" id="startNewGame" methodName="startNewGame"/>
                 </Property>
+                <Property name="accelerator" type="javax.swing.KeyStroke" editor="org.netbeans.modules.form.editors.KeyStrokeEditor">
+                  <KeyStroke key="Ctrl+N"/>
+                </Property>
+                <Property name="mnemonic" type="int" value="78"/>
                 <Property name="text" type="java.lang.String" resourceKey="newMenuItem.text"/>
                 <Property name="name" type="java.lang.String" value="newMenuItem" noResource="true"/>
               </Properties>
