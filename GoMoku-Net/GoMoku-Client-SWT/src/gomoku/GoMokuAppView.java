@@ -77,6 +77,8 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
 
         javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(gomoku.GoMokuApp.class).getContext().getActionMap(GoMokuAppView.class, this);
         newMenuItem.setAction(actionMap.get("startNewGame")); // NOI18N
+        newMenuItem.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        newMenuItem.setMnemonic('N');
         newMenuItem.setText(resourceMap.getString("newMenuItem.text")); // NOI18N
         newMenuItem.setName("newMenuItem"); // NOI18N
         fileMenu.add(newMenuItem);
@@ -105,7 +107,7 @@ public class GoMokuAppView extends FrameView implements GoMokuActionListener {
 
     @Action
     public void startNewGame() {
-        gamePanel.newGame(GoMokuGameType.UserVSUser);
+        gamePanel.newGame(GoMokuGameType.UserVSComputer);
     }
 
 

@@ -156,12 +156,12 @@ private  Point convertStringToMove(String input)
             this.updateUI();
             game.makeMove(location);
 
-            // If the move ended the game
-            updateGameStat();
 
             // update GUI
+            updateGameStat();
             updateGameView();
 
+            // If the move didnt end the game
             if (!game.isGameOver())
             {
                 new Thread(this).start();
@@ -169,38 +169,7 @@ private  Point convertStringToMove(String input)
         }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, e.getMessage());
-        }
-    }
-
-    public void updateGameStat()
-    {
-        if (game.isGameOver())
-        {
-            disableGame();
-            // Not victory attribute and winner if not tie
-            boolean victoryAchieved = game.getVictoryAchieved();
-            if (victoryAchieved)
-            {
-                String winnerName = game.getWinner().getName();
-                Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
-                currentPlayer.setBackground(winnerColor);
-                gameStatText.setText(winnerName + " Wins!");
-            }
-            else
-            {
-                gameStatText.setText("Game over with a tie!");
-            }
-            gameStatText.setVisible(true);
-            currentPlayerText.setVisible(false);
-            JOptionPane.showMessageDialog(null, gameStatText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else
-        {
-            String whosTurn = game.getCurrPlayer().getName().compareTo(game.getMyPlayer().getName()) == 0  ?
-                "Youre Move" : "Wait for move";
-            gameStatText.setText(whosTurn);
-            gameStatText.setVisible(true);
+            JOptionPane.showMessageDialog(null, "Error occured: " + e.toString() + e.getMessage(), "error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -227,6 +196,40 @@ private  Point convertStringToMove(String input)
         }
         catch (Exception ex)
         {
+            JOptionPane.showMessageDialog(this, "Game ended by other player", "Game over", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    public void updateGameStat()
+    {
+        if (game.isGameOver())
+        {
+            disableGame();
+            // Not victory attribute and winner if not tie
+            boolean victoryAchieved = game.getVictoryAchieved();
+            if (victoryAchieved)
+            {
+                String winnerName = game.getWinner().getName();
+                Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
+                currentPlayer.setBackground(winnerColor);
+                gameStatText.setText(winnerName + " Wins!");
+            }
+            else
+            {
+                gameStatText.setText("Game over with a tie!");
+            }
+            gameStatText.setVisible(true);
+            currentPlayerText.setVisible(false);
+            JOptionPane.showMessageDialog(null, gameStatText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
+
+//            newGame(GoMokuGameType.UserVSUser);
+        }
+        else
+        {
+            String whosTurn = game.getCurrPlayer().getName().compareTo(game.getMyPlayer().getName()) == 0  ?
+                "Youre Move" : "Wait for move";
+            gameStatText.setText(whosTurn);
+            gameStatText.setVisible(true);
         }
     }
 
@@ -262,15 +265,18 @@ private  Point convertStringToMove(String input)
                 game.Terminate();
             }
             
-            game = new GoMokuGameLogic(type, playerName.getText());
+            game = new GoMokuGameLogic(GoMokuGameType.UserVSUser, playerName.getText());
             String players = game.getAvailablePlayers();
 
             // If there are no players - wailt for players
             if (players.compareToIgnoreCase(GoMokuGameLogic.PROTOCOL_NO_CLIENTS) == 0)
             {
-                gameStatText.setText("Waiting for player");
+                gameStatText.setText("Waiting for players");
                 gameStatText.setVisible(true);
-                 JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
+                if (type == GoMokuGameType.UserVSComputer)
+                {
+                     JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
+                }
            }
             else
             {
@@ -294,13 +300,7 @@ private  Point convertStringToMove(String input)
             // Waiting for someone to start a game with me
             else
             {
-                game.waitForOponent();
-                gameStatText.setText("Wait for move");
-                gameStatText.setVisible(true);
-//                JOptionPane.showMessageDialog(null, "Got game from " + oponent);
-
-                game.waitForMove();
-                enableGame();
+                waitForGame();
             }
             updateGameView();
         }
@@ -308,6 +308,57 @@ private  Point convertStringToMove(String input)
         {
             JOptionPane.showMessageDialog(this, "Cannot connect to server " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
         }     
+    }
+
+    private void waitForGame()
+    {
+        try
+        {
+
+            gameStatText.setText("Waiting for players");
+            gameStatText.setVisible(true);
+    //                JOptionPane.showMessageDialog(null, "Got game from " + oponent);
+
+            disableGame();
+            final GamePanel thisPanel = this;
+            new Thread(new Runnable() {
+
+            public void run() {
+                try
+                {
+//                    SwingUtilities.invokeAndWait(
+//                        new Runnable()
+//                        {
+//                            public void run()
+//                            {
+//
+//                            }
+//                        }
+//                    );
+            game.waitForOponent();
+//                    SwingUtilities.invokeAndWait(
+//                        new Runnable()
+//                        {
+//                            public void run()
+//                            {
+                                gameStatText.setText("Wait for move");
+                                gameStatText.setVisible(true);
+//                            }
+//                        }
+//                    );
+                    new Thread(thisPanel).start();
+                }
+                catch (Exception e)
+                {
+//                    JOptionPane.showMessageDialog(null, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }).start();
+        }
+        catch (Exception e)
+        {
+//            JOptionPane.showMessageDialog(this, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private String choseOponent(String players)

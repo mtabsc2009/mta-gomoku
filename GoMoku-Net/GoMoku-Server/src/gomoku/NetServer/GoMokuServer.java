@@ -16,14 +16,17 @@ public class GoMokuServer
     private final int GOMOKU_SERVER_PORT = 28800;
     public static final String PROTOCOL_CLIENT_SEPARATOR = ",";
     public static final String PROTOCOL_NO_CLIENTS = "NONE";
+
     private Hashtable m_FreeClientsTable;
     private Hashtable m_CurrentGames;
+    private int m_GameIDSequence;
 
     public GoMokuServer()
     {
         // Create a new clients table
         m_FreeClientsTable = new Hashtable();
         m_CurrentGames = new Hashtable();
+        m_GameIDSequence = 1;
     }
 
     public void startServer() throws IOException
@@ -157,13 +160,14 @@ public class GoMokuServer
         if (m_FreeClientsTable.containsKey(player2ID))
         {
             // Start a new game
-            NetGame newGame = new NetGame(player1, (NetClient)m_FreeClientsTable.get(player2ID));
-
+            NetGame newGame = new NetGame(this, m_GameIDSequence++, player1, (NetClient)m_FreeClientsTable.get(player2ID));
+            m_CurrentGames.put(newGame.getGameID(), this);
 
             // The players are no longer available
             // They are given a game
             NetClient client1 = (NetClient)m_FreeClientsTable.remove(player1.getClientID());
             NetClient client2 = (NetClient)m_FreeClientsTable.remove(player2ID);
+
             client1.setGame(newGame);
             client2.setGame(newGame);
             gameStarted = true;
@@ -171,5 +175,20 @@ public class GoMokuServer
         }
 
         return gameStarted;
+    }
+
+    public void EndGame(NetGame gameOver)
+    {
+        try
+        {
+            m_CurrentGames.remove(gameOver.getGameID());
+//            m_FreeClientsTable.put(gameOver.getClient1().getClientID(), gameOver.getClient1());
+//            m_FreeClientsTable.put(gameOver.getClient2().getClientID(), gameOver.getClient2());
+        }
+        catch (Exception e)
+        {
+            try { gameOver.getClient1().Terminate(); } catch (Exception e2) { }
+            try { gameOver.getClient2().Terminate(); } catch (Exception e2) { }
+        }
     }
 }
