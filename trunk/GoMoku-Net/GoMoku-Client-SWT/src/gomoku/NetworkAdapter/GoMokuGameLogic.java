@@ -7,10 +7,12 @@ package gomoku.NetworkAdapter;
 
 import gomoku.Model.*;
 import java.awt.Point;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
+import java.util.Properties;
 
 /**
  *
@@ -18,10 +20,10 @@ import java.net.*;
  */
 public class GoMokuGameLogic implements IRemoteGameLogic
 {
-    private final String GOMOKU_SERVER_ADDRESS = "127.0.0.1";
-    private final int GOMOKU_SERVER_PORT = 28800;
-    public static final String PROTOCOL_CLIENT_SEPARATOR = ",";
-    public static final String PROTOCOL_NO_CLIENTS = "NONE";
+    public static String GOMOKU_SERVER_ADDRESS = "127.0.0.1";
+    public static int GOMOKU_SERVER_PORT = 28800;
+    public static String PROTOCOL_CLIENT_SEPARATOR = ",";
+    public static String PROTOCOL_NO_CLIENTS = "NONE";
 
     private Socket m_Socket;
     private GameBoard m_GameBoard;
@@ -46,6 +48,23 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_IsVictoryAcheaved = false;
         m_Winner = null;
         m_CurrPlayer = m_Player;
+
+
+        try
+        {
+            Properties clientConfig = new Properties();
+            FileInputStream configFile = new FileInputStream("Client.Config");
+            clientConfig.load(configFile);
+            GOMOKU_SERVER_ADDRESS = clientConfig.get("Server_Address").toString();
+            GOMOKU_SERVER_PORT = Integer.parseInt(clientConfig.get("Server_Port").toString());
+            PROTOCOL_CLIENT_SEPARATOR = clientConfig.get("Protocol_Client_Separator").toString();
+            PROTOCOL_NO_CLIENTS = clientConfig.get("Porocol_No_Clients").toString();
+            configFile.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Config error " + e.toString() + " " + e.getMessage());
+        }
 
         m_Socket = new Socket(GOMOKU_SERVER_ADDRESS, GOMOKU_SERVER_PORT);
         m_inStream = new ObjectInputStream(m_Socket.getInputStream());
