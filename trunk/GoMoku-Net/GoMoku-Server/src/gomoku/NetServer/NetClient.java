@@ -10,7 +10,7 @@ import java.net.*;
 import java.util.Calendar;
 import java.util.Date;
 
-public class NetClient extends Thread
+public class NetClient
 {
     private int m_clientID;
     private Socket m_Socket;
@@ -19,6 +19,8 @@ public class NetClient extends Thread
     private NetGame m_gameSession;
     private boolean m_isInitiator;
     private boolean m_confimingProposal;
+
+    private Thread m_Thread;
 
     private ObjectOutputStream m_outStream;
     private ObjectInputStream m_inStream;
@@ -89,6 +91,11 @@ public class NetClient extends Thread
             // Send the username of the requesting client
             System.out.println("confirming client " + requestingClient.getClientUsername());
             Send(requestingClient.getClientUsername());
+
+            // Now the client sends a byte to realease the wait for initition
+            if (m_Thread != null) {  m_Thread.join(); }
+
+            // Get a confirmation response from the client
             System.out.println("getting boolean ");
             Boolean b = (Boolean)(m_inStream.readObject());
             System.out.println("got boolean " + b.toString());
@@ -105,111 +112,44 @@ public class NetClient extends Thread
         }
     }
 
-    @Override
-    public void run()
+    public void WaitForInitiation()
     {
         try
         {
             m_inStream = new ObjectInputStream(m_Socket.getInputStream());
 
-            while (!m_Socket.isClosed())
-            {
-                // Get the name form the user
-                 m_Name = m_inStream.readObject().toString();
+            // Get the name form the user
+             m_Name = m_inStream.readObject().toString();
 
-                int oponentID = -1;
-                if (!m_confimingProposal)
+             // Wait for initiation
+             final NetClient thisClient = this;
+             m_Thread = new Thread(new Runnable()
+             {
+                public void run()
                 {
-                // Get an oponent id from the client
-                    System.out.println(getClientID() + " waiting for oponent " + this.getClientFullName());
-                    String oponent = m_inStream.readObject().toString();
-                    System.out.println(getClientID() + " got oponent details " + oponent);
-                    oponentID = parseOponentID(oponent);
-                }
-
-                // Get an oponent
-                boolean oponentChosen = false;
-                while (!oponentChosen)
-                {
-                    // If i am the initiator
-                    if (m_gameSession == null)
+                    try
                     {
-                        if (oponentID != -1)
+                        // See if the user chose an oponent
+                        if (waitForInitiation())
                         {
-                            // Offer the game to the other client
-                            // Start a game with the oponent in the server
-                            oponentChosen = m_topServer.startGameWith(this, oponentID);
-                            System.out.println(getClientID() + " sending from server to game " + oponentChosen);
-
-                            // Confirm game
-                            Send(new Boolean(oponentChosen));
-                            System.out.println(getClientID() + " sent from server to game " + oponentChosen);
-                            m_isInitiator = oponentChosen;
-                            if (oponentChosen)
-                            {
-                                Send(m_gameSession.getGameSession().getPlayer(GoMokuGameLogic.BLACK_PLAYER_INDEX));
-                            }
-                            else
-                            {
-                                // Refused ior unsuccesfull, start waiting for proposals
-                                oponentID = -1;
-                            }
+                            playGame();
+                        }
+                        else
+                        {
+                            // Block the thread, if the client exits - it will close
+                            System.out.println("got byte " + m_inStream.readObject());
                         }
                     }
-                    // Someone started a game with me
-                    else
+                    catch (Exception e)
                     {
-                        oponentChosen = true;
-                        m_isInitiator = false;
+                        System.err.println("byte error " + e.toString() + " " + e.getMessage());
+                        m_topServer.disconnectClient(thisClient, e);
+                        Terminate();
                     }
+
                 }
-
-                // Play
-                GoMokuGameLogic game = m_gameSession.getGameSession();
-                System.out.println("ingame init:" + m_isInitiator + " " + this.getClientFullName());
-
-                while (m_gameSession != null && m_gameSession.isGameInSession())
-                {
-                    // If this client is the initiator it goes first
-                    // so wait for the white turn
-                    if (m_isInitiator && game.getCurrPlayer().getName().compareToIgnoreCase("White") == 0)
-                    {
-                        // Get a move
-                        System.out.println("turn of " + m_isInitiator + " " + this.getClientFullName());
-                        sendBoard(game);
-                        System.out.println("board sent to " + m_isInitiator + " " + this.getClientFullName());
-                        Point move = (Point)m_inStream.readObject();
-                        System.out.println("got move " + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
-                        game.makeMove(move);
-                        System.out.println("move " + move.toString() + "was made by " + m_isInitiator + " " + this.getClientFullName());
-
-                        // Send the new state
-                        sendBoard(game);
-                        System.out.println("board2 sent to " + m_isInitiator + " " + this.getClientFullName());
-                    }
-                    // If im not the initiator, and its my turn
-                    else if (!m_isInitiator && game.getCurrPlayer().getName().compareToIgnoreCase("Black") == 0)
-                    {
-                        // first send the board state
-                        System.out.println("n turn of " + m_isInitiator + " " + this.getClientFullName());
-                        sendBoard(game);
-                        System.out.println("n board sent to " + m_isInitiator + " " + this.getClientFullName());
-
-                        // Then make a move
-                        Point move = (Point)m_inStream.readObject();
-                        System.out.println("n got move " + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
-                        game.makeMove(move);
-                        System.out.println("n move " + move.toString() + "was made by " + m_isInitiator + " " + this.getClientFullName());
-
-                        // Send the new state
-                        sendBoard(game);
-                        System.out.println("n board2 sent to " + m_isInitiator + " " + this.getClientFullName());
-                    }
-                }
-                
-                // Close the game
-                m_gameSession.EndGame();
-           }
+            });
+            m_Thread.start();
         }
         catch (Exception e)
         {
@@ -218,9 +158,97 @@ public class NetClient extends Thread
         }
     }
 
+    protected boolean waitForInitiation() throws IOException, ClassNotFoundException
+    {
+        // IF i didnt reciece an invictation,
+        // see if the user initiated something
+        boolean oponentChosen = false;
+        int oponentID = -1;
+        if (!m_confimingProposal)
+        {
+            // Get an oponent id from the client
+            System.out.println(getClientID() + " waiting for oponent " + this.getClientFullName());
+            String oponent = m_inStream.readObject().toString();
+            System.out.println(getClientID() + " got oponent details " + oponent);
+            oponentID = parseOponentID(oponent);
+
+            // Got a valid client id
+            if (oponentID != -1)
+            {
+                // Offer the game to the other client
+                // Start a game with the oponent in the server
+                oponentChosen = m_topServer.startGameWith(this, oponentID);
+                System.out.println(getClientID() + " sending from server to game " + oponentChosen);
+                
+                // Confirm game
+                Send(new Boolean(oponentChosen));
+                System.out.println(getClientID() + " sent from server to game " + oponentChosen);
+                m_isInitiator = oponentChosen;
+                if (oponentChosen)
+                {
+                    Send(m_gameSession.getGameSession().getPlayer(GoMokuGameLogic.BLACK_PLAYER_INDEX));
+                } else
+                {
+                    // Refused ior unsuccesfull, WaitForInitiation waiting for proposals
+                    oponentID = -1;
+                }
+            }
+        }
+        return oponentChosen;
+    }
+
+    protected void playGame() throws IOException, ClassNotFoundException
+    {
+        GoMokuGameLogic game = m_gameSession.getGameSession();
+        System.out.println("ingame init:" + m_isInitiator + " " + this.getClientFullName());
+
+        while (m_gameSession != null && m_gameSession.isGameInSession())
+        {
+            // If this client is the initiator it goes first
+            // so wait for the white turn
+            if (m_isInitiator && game.getCurrPlayer().getName().compareToIgnoreCase("White") == 0)
+            {
+                // Get a move
+                System.out.println("turn of " + m_isInitiator + " " + this.getClientFullName());
+                sendBoard(game);
+                System.out.println("board sent to " + m_isInitiator + " " + this.getClientFullName());
+
+                // Then make a move
+                Point move = (Point) m_inStream.readObject();
+                System.out.println("got move " + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
+                game.makeMove(move);
+                System.out.println("move " + move.toString() + "was made by " + m_isInitiator + " " + this.getClientFullName());
+
+                // Send the new state
+                sendBoard(game);
+                System.out.println("board2 sent to " + m_isInitiator + " " + this.getClientFullName());
+            }
+            else if (!m_isInitiator && game.getCurrPlayer().getName().compareToIgnoreCase("Black") == 0)
+            {
+                // first send the board state
+                System.out.println("n turn of " + m_isInitiator + " " + this.getClientFullName());
+                sendBoard(game);
+                System.out.println("n board sent to " + m_isInitiator + " " + this.getClientFullName());
+
+                // Then make a move
+                Point move = (Point) m_inStream.readObject();
+                System.out.println("n got move " + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
+                game.makeMove(move);
+                System.out.println("n move " + move.toString() + "was made by " + m_isInitiator + " " + this.getClientFullName());
+
+                // Send the new state
+                sendBoard(game);
+                System.out.println("n board2 sent to " + m_isInitiator + " " + this.getClientFullName());
+            }
+        }
+
+        // Close the game
+        m_gameSession.EndGame();
+    }
+
     public void Terminate()
     {
-        try { this.currentThread(). interrupt(); } catch (Exception ex) { ; }
+        try { this.m_Thread.interrupt(); } catch (Exception ex) { ; }
         try { m_inStream.close(); } catch (Exception ex) { ; }
         try { m_outStream.close(); } catch (Exception ex) { ; }
         try { m_Socket.close(); } catch (Exception ex) { ; }
@@ -265,15 +293,46 @@ public class NetClient extends Thread
         }
     }
 
-    public void setGame(NetGame game) throws IOException
+    public void StartGame(NetGame game) throws IOException
     {
+        m_gameSession = game;
+
         // If im not the initiator - send the opoent to the client
         if (this.getClientID() == game.getClient2().getClientID())
         {
             Send(game.getGameSession().getPlayer(GoMokuGameLogic.WHITE_PLAYER_INDEX));
+            final NetClient thisClient = this;
+            m_Thread = new Thread(new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        playGame();
+                    }
+                    catch (Exception e)
+                    {
+                        m_topServer.disconnectClient(thisClient, e);
+                        Terminate();
+                    }
+                }
+            });
+            m_Thread.start();
         }
+    }
 
-        m_gameSession = game;
+    public void EndGame()
+    {
+        try
+        {
+            if (m_Thread != null)
+            {
+                m_Thread.join();
+            }
+        }
+        catch (Exception e)
+        {
+        }
     }
 
     private int parseOponentID(String oponent)

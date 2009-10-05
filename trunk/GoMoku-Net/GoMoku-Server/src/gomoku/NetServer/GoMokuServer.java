@@ -91,7 +91,7 @@ public class GoMokuServer
         NetClient newClient = new NetClient(clientID, clientSocket, this);
         m_FreeClientsTable.put(clientID, newClient);
         sendWelcome(newClient);
-        newClient.start();
+        newClient.WaitForInitiation();
     }
 
     public void disconnectClient(NetClient client, Exception e)
@@ -161,19 +161,21 @@ public class GoMokuServer
         {
             // Confirm the game with the other user
             NetClient client2 = (NetClient)m_FreeClientsTable.get(client2ID);
+
+            // The players are no longer available - remove them from the list
+            client1 = (NetClient)m_FreeClientsTable.remove(client1.getClientID());
+            client2 = (NetClient)m_FreeClientsTable.remove(client2ID);
+
+            // If the oponent client confirmed the proposal
             if (client2.confirmGameWith(client1))
             {
                 // Start a new game
                 NetGame newGame = new NetGame(this, m_GameIDSequence++, client1, client2);
                 m_CurrentGames.put(newGame.getGameID(), this);
 
-                // The players are no longer available - remove them from the list
-                client1 = (NetClient)m_FreeClientsTable.remove(client1.getClientID());
-                client2 = (NetClient)m_FreeClientsTable.remove(client2ID);
-
                 // They are given a game
-                client1.setGame(newGame);
-                client2.setGame(newGame);
+                client1.StartGame(newGame);
+                client2.StartGame(newGame);
                 gameStarted = true;
                 System.out.println("New game starting: " + client1.getClientFullName());
             }

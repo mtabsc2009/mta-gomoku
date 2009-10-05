@@ -95,17 +95,18 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_outStream.flush();
 
         String oponent = m_inStream.readObject().toString();
-        
+
+        // Write a byte to release the server from waiting to close the session
+        m_outStream.writeObject(new Boolean(true));
+        m_outStream.flush();
+       
         return oponent;
     }
 
     public void ConfirmOponent() throws IOException, ClassNotFoundException
     {
-        // Accept the player's offer
-//        m_outStream.reset();
-        m_outStream.flush();
-
         // Confirm the offer
+        m_outStream.flush();
         m_outStream.writeObject(new Boolean(true));
         m_outStream.flush();
 
@@ -113,16 +114,12 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_Oponent = (Player)m_inStream.readObject();
 
         // Confirm player
-//        m_outStream.writeObject(m_Oponent);
         m_outStream.flush();
-
-//        return m_Oponent;
     }
 
     public void RefuseOponent() throws IOException
     {
         // Refure the player's offer
-//        m_outStream.reset();
         m_outStream.writeObject(new Boolean(false));
         m_outStream.flush();
     }

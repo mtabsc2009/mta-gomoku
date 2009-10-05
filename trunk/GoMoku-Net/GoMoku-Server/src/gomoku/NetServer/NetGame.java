@@ -57,8 +57,8 @@ public class NetGame {
 
     public void EndGame()
     {
-        try { m_Client1.join(); } catch (InterruptedException e) { }
-        try { m_Client2.join(); } catch (InterruptedException e) { }
+        try { m_Client1.EndGame(); } catch (Exception e) { }
+        try { m_Client2.EndGame(); } catch (Exception e) { }
         m_GameSession = null;
         m_topServer.EndGame(this);
         Terminate();
