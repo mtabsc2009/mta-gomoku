@@ -154,24 +154,29 @@ public class GoMokuServer
         }
     }
 
-    public boolean startGameWith(NetClient player1, int player2ID) throws IOException
+    public boolean startGameWith(NetClient client1, int client2ID) throws IOException
     {
         boolean gameStarted = false;
-        if (m_FreeClientsTable.containsKey(player2ID))
+        if (m_FreeClientsTable.containsKey(client2ID))
         {
-            // Start a new game
-            NetGame newGame = new NetGame(this, m_GameIDSequence++, player1, (NetClient)m_FreeClientsTable.get(player2ID));
-            m_CurrentGames.put(newGame.getGameID(), this);
+            // Confirm the game with the other user
+            NetClient client2 = (NetClient)m_FreeClientsTable.get(client2ID);
+            if (client2.confirmGameWith(client1))
+            {
+                // Start a new game
+                NetGame newGame = new NetGame(this, m_GameIDSequence++, client1, client2);
+                m_CurrentGames.put(newGame.getGameID(), this);
 
-            // The players are no longer available
-            // They are given a game
-            NetClient client1 = (NetClient)m_FreeClientsTable.remove(player1.getClientID());
-            NetClient client2 = (NetClient)m_FreeClientsTable.remove(player2ID);
+                // The players are no longer available - remove them from the list
+                client1 = (NetClient)m_FreeClientsTable.remove(client1.getClientID());
+                client2 = (NetClient)m_FreeClientsTable.remove(client2ID);
 
-            client1.setGame(newGame);
-            client2.setGame(newGame);
-            gameStarted = true;
-            System.out.println("New game starting: " + player1.getClientFullName());
+                // They are given a game
+                client1.setGame(newGame);
+                client2.setGame(newGame);
+                gameStarted = true;
+                System.out.println("New game starting: " + client1.getClientFullName());
+            }
         }
 
         return gameStarted;

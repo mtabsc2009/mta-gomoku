@@ -62,38 +62,71 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         try { m_Socket.close(); } catch (Exception ex) { ; }
     }
 
-    public boolean choseOponent(String oponent)
+    public boolean choseOponent(String oponentDetails) throws IOException, ClassNotFoundException
     {
         boolean oponentChosen = false;
-        try
+        
+        // Ofer the oponent
+        m_outStream.writeObject(oponentDetails);
+        m_outStream.flush();
+
+        // Get confirmatiion from the server
+        Boolean b = (Boolean)m_inStream.readObject();
+        oponentChosen = b.booleanValue();
+
+        // If confirmed - get the oponent
+        if (oponentChosen)
         {
-            m_outStream.writeObject(oponent);
-            m_outStream.flush();
-            Boolean b = (Boolean)m_inStream.readObject();
-            oponentChosen = b.booleanValue();
-            if (oponentChosen)
-            {
-                m_Oponent = (Player)m_inStream.readObject();
-            }
-        }
-        catch (Exception e)
-        {
+            m_Oponent = (Player)m_inStream.readObject();
         }
 
         return oponentChosen;
     }
 
-    public Player waitForOponent() throws IOException, ClassNotFoundException
+    public Player getOponent()
     {
+        return m_Oponent;
+    }
+
+    public String waitForOponent() throws IOException, ClassNotFoundException
+    {
+        // release the client from waiting to an intiaition (the player is not choosing an oponent)
+        m_outStream.writeObject("a");
+        m_outStream.flush();
+
+        String oponent = m_inStream.readObject().toString();
+        
+        return oponent;
+    }
+
+    public void ConfirmOponent() throws IOException, ClassNotFoundException
+    {
+        // Accept the player's offer
+//        m_outStream.reset();
+        m_outStream.flush();
+
+        // Confirm the offer
+        m_outStream.writeObject(new Boolean(true));
+        m_outStream.flush();
+
+        // Get the oponent
         m_Oponent = (Player)m_inStream.readObject();
 
         // Confirm player
-        m_outStream.writeObject(m_Oponent);
+//        m_outStream.writeObject(m_Oponent);
         m_outStream.flush();
 
-        return m_Oponent;
+//        return m_Oponent;
     }
-    
+
+    public void RefuseOponent() throws IOException
+    {
+        // Refure the player's offer
+//        m_outStream.reset();
+        m_outStream.writeObject(new Boolean(false));
+        m_outStream.flush();
+    }
+
     public Player getMyPlayer()
     {
         return m_Player;

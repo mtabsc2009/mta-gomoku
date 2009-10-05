@@ -249,14 +249,15 @@ private  Point convertStringToMove(String input)
 
     public void newGame(GoMokuGameType type)
     {
+        // Init the GUI
         currentPlayerText.setText("Current Player:");
         currentPlayerText.setVisible(true);
         gameStatText.setVisible(false);
-
         disableGame();
 
+        // Init the application
         this.gameBoardView.resetBoard();
-        boolean bGotGame = false;
+
         try
         {
             // Terminate the old game it existed
@@ -264,8 +265,11 @@ private  Point convertStringToMove(String input)
             {
                 game.Terminate();
             }
-            
+
+            // Create a new game and connect to the server
             game = new GoMokuGameLogic(GoMokuGameType.UserVSUser, playerName.getText());
+
+            // Get the available players from the server
             String players = game.getAvailablePlayers();
 
             // If there are no players - wailt for players
@@ -277,32 +281,14 @@ private  Point convertStringToMove(String input)
                 {
                      JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
                 }
-           }
+                waitForGame();
+            }
+            // There are players - let the user chose
             else
             {
                 // Chose an oponent
-                String oponent = choseOponent(players);
-                if (!oponent.isEmpty())
-                {
-                    bGotGame = game.choseOponent(oponent);
-                }
+                chooseOponent(players);
             }
-
-            // I am the initiator - I get to play first
-            if (bGotGame)
-            {
-//                JOptionPane.showMessageDialog(null, "Got game");
-                gameStatText.setText("Youre move");
-                gameStatText.setVisible(true);
-                enableGame();
-                game.waitForMove();
-            }
-            // Waiting for someone to start a game with me
-            else
-            {
-                waitForGame();
-            }
-            updateGameView();
         }
         catch (Exception e)
         {
@@ -310,43 +296,96 @@ private  Point convertStringToMove(String input)
         }     
     }
 
+    private void chooseOponent(String players) throws IOException, ClassNotFoundException
+    {
+        boolean bGotGame = false;
+        String oponent = getOponentFromPlayer(players);
+
+        // User canceled
+        if (oponent.isEmpty())
+        {
+            waitForGame();
+        }
+        // User didnt cancel
+        else
+        {
+            gameStatText.setText("Sending offer..");
+            gameStatText.setVisible(true);
+            bGotGame = game.choseOponent(oponent);
+
+            // Oponent and server conifmred
+            // I am the initiator - I get to play first
+            if (bGotGame)
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        oponent + "has accepted your offer. Goodluck!",
+                        "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
+                gameStatText.setText("Youre move");
+                gameStatText.setVisible(true);
+                enableGame();
+                game.waitForMove(); // ** why not new Thread(this).start(); ?
+                updateGameView();
+            }
+            // Got rejected by server/user
+            else
+            {
+                JOptionPane.showMessageDialog(
+                        this,
+                        oponent + "has rejected your offer\nTry another player.",
+                        "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
+                waitForGame();
+            }
+        }
+    }
+
     private void waitForGame()
     {
         try
         {
-
+            // Update GUI
             gameStatText.setText("Waiting for players");
             gameStatText.setVisible(true);
-    //                JOptionPane.showMessageDialog(null, "Got game from " + oponent);
-
             disableGame();
             final GamePanel thisPanel = this;
             new Thread(new Runnable() {
-
-            public void run() {
+            public void run()
+            {
                 try
                 {
-//                    SwingUtilities.invokeAndWait(
-//                        new Runnable()
-//                        {
-//                            public void run()
-//                            {
-//
-//                            }
-//                        }
-//                    );
-            game.waitForOponent();
-//                    SwingUtilities.invokeAndWait(
-//                        new Runnable()
-//                        {
-//                            public void run()
-//                            {
-                                gameStatText.setText("Wait for move");
-                                gameStatText.setVisible(true);
-//                            }
-//                        }
-//                    );
-                    new Thread(thisPanel).start();
+                    int response = JOptionPane.NO_OPTION;
+
+                    while (response != JOptionPane.YES_OPTION)
+                    {
+
+                        // Wait for the player
+                        String oponent = game.waitForOponent();
+
+                        // When got an oponent
+                        // Confirm with the user
+                        response = JOptionPane.showConfirmDialog(
+                                thisPanel,
+                                "You got a game offer from: " + oponent + " !\n"+
+                                "Do you want to play GoMoku?",
+                                "GoMoku Offer!",
+                                JOptionPane.YES_NO_OPTION,
+                                JOptionPane.QUESTION_MESSAGE);
+
+                        // If the user cofirmed
+                         if (response == JOptionPane.YES_OPTION)
+                         {
+                            game.ConfirmOponent();
+
+                            // Wait for a move to be made by the oponent
+                            gameStatText.setText("Wait for move");
+                            gameStatText.setVisible(true);
+                            new Thread(thisPanel).start();
+                         }
+                         else
+                         {
+                            game.RefuseOponent();
+                         }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -361,7 +400,7 @@ private  Point convertStringToMove(String input)
         }
     }
 
-    private String choseOponent(String players)
+    private String getOponentFromPlayer(String players)
     {
             ChooseOponentDialog dialog = new ChooseOponentDialog(GoMokuAppView.topFrame , true);
             Point thisLocation;
