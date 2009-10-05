@@ -2,6 +2,7 @@ package gomoku.NetServer;
 
 import gomoku.Controller.*;
 import gomoku.Model.*;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamClass;
@@ -9,13 +10,14 @@ import java.net.*;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Properties;
 
 
 public class GoMokuServer
 {
-    private final int GOMOKU_SERVER_PORT = 28800;
-    public static final String PROTOCOL_CLIENT_SEPARATOR = ",";
-    public static final String PROTOCOL_NO_CLIENTS = "NONE";
+    private int GOMOKU_SERVER_PORT = 28800;
+    public static String PROTOCOL_CLIENT_SEPARATOR = ",";
+    public static String PROTOCOL_NO_CLIENTS = "NONE";
 
     private Hashtable m_FreeClientsTable;
     private Hashtable m_CurrentGames;
@@ -27,6 +29,21 @@ public class GoMokuServer
         m_FreeClientsTable = new Hashtable();
         m_CurrentGames = new Hashtable();
         m_GameIDSequence = 1;
+
+        try
+        {
+            Properties serverConfig = new Properties(); 
+            FileInputStream configFile = new FileInputStream(".\\Server.Config");
+            serverConfig.load(configFile);
+            GOMOKU_SERVER_PORT = Integer.parseInt(serverConfig.get("Server_Port").toString());
+            PROTOCOL_CLIENT_SEPARATOR = serverConfig.get("Protocol_Client_Separator").toString();
+            PROTOCOL_NO_CLIENTS = serverConfig.get("Porocol_No_Clients").toString();
+            configFile.close();
+        }
+        catch (Exception e)
+        {
+            System.err.println("Config error " + e.toString() + " " + e.getMessage());
+        }
     }
 
     public void startServer() throws IOException
@@ -177,7 +194,7 @@ public class GoMokuServer
                 client1.StartGame(newGame);
                 client2.StartGame(newGame);
                 gameStarted = true;
-                System.out.println("New game starting: " + client1.getClientFullName());
+                System.out.println("New game starting: " + client1.getClientFullName() + " vs " + client2.getClientFullName());
             }
         }
 
@@ -189,8 +206,6 @@ public class GoMokuServer
         try
         {
             m_CurrentGames.remove(gameOver.getGameID());
-//            m_FreeClientsTable.put(gameOver.getClient1().getClientID(), gameOver.getClient1());
-//            m_FreeClientsTable.put(gameOver.getClient2().getClientID(), gameOver.getClient2());
         }
         catch (Exception e)
         {

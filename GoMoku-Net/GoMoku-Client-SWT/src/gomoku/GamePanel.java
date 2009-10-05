@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.ConnectException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import java.util.Properties;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.IconUIResource;
 import org.jdesktop.application.Action;
@@ -42,7 +44,17 @@ public class GamePanel extends javax.swing.JPanel
 
         try
         {
-            playerName.setText(System.getProperty ( "user.name" ));
+            java.util.Properties clientConfig = new Properties();
+            FileInputStream configFile = new FileInputStream("Client.Config");
+            clientConfig.load(configFile);
+            String playerUsername = clientConfig.getProperty("Client_Username");
+            configFile.close();
+
+            if (playerUsername.isEmpty())
+            {
+                playerUsername = System.getProperty ( "user.name" );
+            }
+            playerName.setText(playerUsername);
             playerTitle.setVisible(true);
         }
         catch (Exception e)
@@ -130,11 +142,6 @@ private  Point convertStringToMove(String input)
         return gameType;
     }    
     
-    /**
-     *  End of private helper functions 
-     */ 
-    
-    
     public void updateGameView()
     {
         this.gameBoardView.updateBoardView(game);
@@ -221,8 +228,6 @@ private  Point convertStringToMove(String input)
             gameStatText.setVisible(true);
             currentPlayerText.setVisible(false);
             JOptionPane.showMessageDialog(null, gameStatText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
-
-//            newGame(GoMokuGameType.UserVSUser);
         }
         else
         {
@@ -236,14 +241,12 @@ private  Point convertStringToMove(String input)
     private void disableGame()
     {
         makeMoveButton.setEnabled(false);
-//        jButton1.setEnabled(true);
         makeMoveButton.updateUI();
     }
 
     private void enableGame()
     {
         makeMoveButton.setEnabled(true);
-//        jButton1.setEnabled(false);
         makeMoveButton.updateUI();
     }
 
@@ -290,9 +293,18 @@ private  Point convertStringToMove(String input)
                 chooseOponent(players);
             }
         }
+        catch (ConnectException ce)
+        {
+            String error = String.format(
+                    "Cannot connect to server: %s:%d\nCheck config file (Client.Config)",
+                    GoMokuGameLogic.GOMOKU_SERVER_ADDRESS, GoMokuGameLogic.GOMOKU_SERVER_PORT);
+            JOptionPane.showMessageDialog(
+                    this,
+                    error, "Connection Error", JOptionPane.ERROR_MESSAGE);
+        }
         catch (Exception e)
         {
-            JOptionPane.showMessageDialog(this, "Cannot connect to server " + e.getMessage(), "Connection Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Cannot connect to server " + e.toString(), "Connection Error", JOptionPane.ERROR_MESSAGE);
         }     
     }
 
@@ -322,10 +334,12 @@ private  Point convertStringToMove(String input)
                 gameStatText.setText("Youre move");
                 gameStatText.setVisible(true);
                 enableGame();
-                game.waitForMove(); // ** why not new Thread(this).start(); ?
-                updateGameView();
+
+                // Make the first move and wait
+                new Thread(this).start();
             }
             // Got rejected by server/user
+            // Wait for a game proposal
             else
             {
                 JOptionPane.showMessageDialog(
@@ -405,12 +419,12 @@ private  Point convertStringToMove(String input)
     {
             ChooseOponentDialog dialog = new ChooseOponentDialog(GoMokuAppView.topFrame , true);
             Point thisLocation;
+            thisLocation = new Point(400,400);
             try
             {
                 thisLocation = this.getLocationOnScreen();
             }
             catch (Exception e) { }
-            thisLocation = new Point(400,400);
             int newX = thisLocation.x + this.getWidth()/2 - dialog.getWidth()/2;
             int newY = thisLocation.y + this.getHeight()/2 - dialog.getHeight()/2;
             dialog.setLocation(new Point(newX, newY));
