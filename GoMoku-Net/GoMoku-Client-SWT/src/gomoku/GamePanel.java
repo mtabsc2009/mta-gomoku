@@ -309,8 +309,6 @@ private  Point convertStringToMove(String input)
         // User didnt cancel
         else
         {
-            gameStatText.setText("Sending offer..");
-            gameStatText.setVisible(true);
             bGotGame = game.choseOponent(oponent);
 
             // Oponent and server conifmred
@@ -319,7 +317,7 @@ private  Point convertStringToMove(String input)
             {
                 JOptionPane.showMessageDialog(
                         this,
-                        oponent + "has accepted your offer. Goodluck!",
+                        oponent + " has accepted your offer. Goodluck!",
                         "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
                 gameStatText.setText("Youre move");
                 gameStatText.setVisible(true);
@@ -332,7 +330,7 @@ private  Point convertStringToMove(String input)
             {
                 JOptionPane.showMessageDialog(
                         this,
-                        oponent + "has rejected your offer\nTry another player.",
+                        oponent + " has rejected your offer\nTry another player.",
                         "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
                 waitForGame();
             }
@@ -387,16 +385,19 @@ private  Point convertStringToMove(String input)
                          }
                     }
                 }
+                catch (IOException ioe)
+                {
+                }
                 catch (Exception e)
                 {
-//                    JOptionPane.showMessageDialog(null, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }).start();
         }
         catch (Exception e)
         {
-//            JOptionPane.showMessageDialog(this, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Unknown error occured " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -415,6 +416,7 @@ private  Point convertStringToMove(String input)
             dialog.setLocation(new Point(newX, newY));
             dialog.setPlayers(players);
             dialog.setVisible(true);
+
             return dialog.getOponent();
     }
 
