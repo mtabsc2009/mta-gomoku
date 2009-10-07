@@ -12,9 +12,12 @@
 package gomoku;
 
 import gomoku.NetworkAdapter.GoMokuGameLogic;
+import java.awt.event.ActionEvent;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 /**
  *
@@ -23,6 +26,7 @@ import javax.swing.JOptionPane;
 public class ChooseOponentDialog extends javax.swing.JDialog {
 
     private String m_selectedOponent;
+    private String[] playerItems;
 
     /** Creates new form ChooseOponentDialog */
     public ChooseOponentDialog(java.awt.Frame parent, boolean modal) {
@@ -33,11 +37,12 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
 
     public void setPlayers(String players)
     {
-         String[] playerItems = players.split(GoMokuGameLogic.PROTOCOL_CLIENT_SEPARATOR);
+         playerItems = players.split(GoMokuGameLogic.PROTOCOL_CLIENT_SEPARATOR);
          DefaultListModel list = new DefaultListModel();
          for (int currPlayer = 0; currPlayer < playerItems.length; currPlayer++)
          {
-             list.addElement(playerItems[currPlayer]);
+             String[] player = playerItems[currPlayer].split(" ");
+             list.addElement(String.format("%s   (ip:%s  id:%s)", player[1], player[2].substring(2, player[2].length()-1), player[0]));
          }
          lstPlayers.setModel(list);
     }
@@ -51,10 +56,28 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
         lstPlayers = new javax.swing.JList();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+
+        jScrollPane2.setName("jScrollPane2"); // NOI18N
+
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jTable1.setName("jTable1"); // NOI18N
+        jScrollPane2.setViewportView(jTable1);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(gomoku.GoMokuApp.class).getContext().getResourceMap(ChooseOponentDialog.class);
@@ -68,6 +91,11 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
         lstPlayers.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         lstPlayers.setToolTipText(resourceMap.getString("lstPlayers.toolTipText")); // NOI18N
         lstPlayers.setName("lstPlayers"); // NOI18N
+        lstPlayers.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                lstPlayersMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(lstPlayers);
 
         jButton1.setText(resourceMap.getString("jButton1.text")); // NOI18N
@@ -100,20 +128,26 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(277, Short.MAX_VALUE)
+                .addContainerGap(278, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(jButton2)))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(28, Short.MAX_VALUE)))
+                    .addContainerGap(29, Short.MAX_VALUE)))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+        choseOponent();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void choseOponent()
+    {
         // No selection made
         if (lstPlayers.getSelectedIndex() == -1)
         {
@@ -121,15 +155,22 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
         }
         else
         {
-            m_selectedOponent = lstPlayers.getSelectedValue().toString();
+            m_selectedOponent = playerItems[lstPlayers.getSelectedIndex()];
             this.setVisible(false);
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         m_selectedOponent = "";
         this.setVisible(false);
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void lstPlayersMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lstPlayersMousePressed
+        if (evt.getClickCount() == 2 && evt.getButton() == evt.BUTTON1)
+        {
+            choseOponent();
+        }
+    }//GEN-LAST:event_lstPlayersMousePressed
 
     /**
     * @param args the command line arguments
@@ -152,6 +193,8 @@ public class ChooseOponentDialog extends javax.swing.JDialog {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
     private javax.swing.JList lstPlayers;
     // End of variables declaration//GEN-END:variables
 
