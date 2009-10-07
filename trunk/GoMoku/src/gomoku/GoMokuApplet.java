@@ -25,7 +25,7 @@ public class GoMokuApplet extends javax.swing.JApplet {
                     game = new GoMokuGameLogic(GoMokuGameType.UserVSUser);
                                         
                     
-                    gamePanel.initBoard(game);
+//                    gamePanel.initBoard(game);
                     
                 }
             });
