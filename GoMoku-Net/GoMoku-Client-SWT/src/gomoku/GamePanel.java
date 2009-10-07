@@ -165,8 +165,8 @@ private  Point convertStringToMove(String input)
 
 
             // update GUI
-            updateGameStat();
             updateGameView();
+            updateGameStat();
 
             // If the move didnt end the game
             if (!game.isGameOver())
@@ -190,8 +190,8 @@ private  Point convertStringToMove(String input)
                 {
                     public void run()
                     {
-                        updateGameStat();
                         updateGameView();
+                        updateGameStat();
 
                         if (!game.isGameOver())
                         {
@@ -214,20 +214,25 @@ private  Point convertStringToMove(String input)
             disableGame();
             // Not victory attribute and winner if not tie
             boolean victoryAchieved = game.getVictoryAchieved();
+            String myStat = null;
             if (victoryAchieved)
             {
                 String winnerName = game.getWinner().getName();
                 Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
                 currentPlayer.setBackground(winnerColor);
+                myStat =
+                        winnerName.compareTo(game.getMyPlayer().getName()) == 0  ?
+                            "You win!" : "You lost!";
                 gameStatText.setText(winnerName + " Wins!");
             }
             else
             {
-                gameStatText.setText("Game over with a tie!");
+                myStat = "Game over with a tie!";
+                gameStatText.setText(myStat);
             }
             gameStatText.setVisible(true);
             currentPlayerText.setVisible(false);
-            JOptionPane.showMessageDialog(null, gameStatText.getText(), "Game over", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, myStat, "Game over", JOptionPane.INFORMATION_MESSAGE);
         }
         else
         {
@@ -253,6 +258,7 @@ private  Point convertStringToMove(String input)
     public void newGame(GoMokuGameType type)
     {
         // Init the GUI
+        GoMokuAppView.topFrame.setTitle("Gomoku Game");
         currentPlayerText.setText("Current Player:");
         currentPlayerText.setVisible(true);
         gameStatText.setVisible(false);
@@ -282,7 +288,7 @@ private  Point convertStringToMove(String input)
                 gameStatText.setVisible(true);
                 if (type == GoMokuGameType.UserVSComputer)
                 {
-                     JOptionPane.showMessageDialog(this, "There are no players in the server, waiting for players..", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
+                     JOptionPane.showMessageDialog(this, "There are no players in the server. You can:\n - Press OK to wait for a game invitation from another player\n - Use the menu to try and start a new game and check again for players", "GoMoku Game", JOptionPane.INFORMATION_MESSAGE);
                 }
                 waitForGame();
             }
@@ -322,6 +328,7 @@ private  Point convertStringToMove(String input)
         else
         {
             bGotGame = game.choseOponent(oponent);
+            String oponentName = oponent.split(" ")[1];
 
             // Oponent and server conifmred
             // I am the initiator - I get to play first
@@ -329,8 +336,13 @@ private  Point convertStringToMove(String input)
             {
                 JOptionPane.showMessageDialog(
                         this,
-                        oponent + " has accepted your offer. Goodluck!",
+                        oponentName + " has accepted your offer. Goodluck!",
                         "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
+
+                GoMokuAppView.topFrame.setTitle(
+                        String.format("Gomoku Game: %s (White) VS %s (Black)",
+                        playerName.getText(), oponentName));
+
                 gameStatText.setText("Youre move");
                 gameStatText.setVisible(true);
                 enableGame();
@@ -344,7 +356,7 @@ private  Point convertStringToMove(String input)
             {
                 JOptionPane.showMessageDialog(
                         this,
-                        oponent + " has rejected your offer\nTry another player.",
+                        oponentName + " has rejected your offer\nTry another player.",
                         "GoMoku!", JOptionPane.INFORMATION_MESSAGE);
                 waitForGame();
             }
@@ -372,12 +384,13 @@ private  Point convertStringToMove(String input)
 
                         // Wait for the player
                         String oponent = game.waitForOponent();
+                        String oponentName = oponent;
 
                         // When got an oponent
                         // Confirm with the user
                         response = JOptionPane.showConfirmDialog(
                                 thisPanel,
-                                "You got a game offer from: " + oponent + " !\n"+
+                                "You got a game offer from: " + oponentName + " !\n"+
                                 "Do you want to play GoMoku?",
                                 "GoMoku Offer!",
                                 JOptionPane.YES_NO_OPTION,
@@ -388,14 +401,19 @@ private  Point convertStringToMove(String input)
                          {
                             game.ConfirmOponent();
 
+                            GoMokuAppView.topFrame.setTitle(
+                                    String.format("Gomoku Game: %s (White) VS %s (Black)",
+                                    oponentName, playerName.getText()));
+
                             // Wait for a move to be made by the oponent
-                            gameStatText.setText("Wait for move");
+                            gameStatText.setText("Wait for  move");
                             gameStatText.setVisible(true);
                             new Thread(thisPanel).start();
                          }
                          else
                          {
                             game.RefuseOponent();
+                            newGame(GoMokuGameType.UserVSUser);
                          }
                     }
                 }
