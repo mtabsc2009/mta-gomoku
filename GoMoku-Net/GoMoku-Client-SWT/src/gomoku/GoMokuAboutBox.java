@@ -33,9 +33,9 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
         javax.swing.JLabel vendorLabel = new javax.swing.JLabel();
         javax.swing.JLabel appVendorLabel = new javax.swing.JLabel();
         javax.swing.JLabel homepageLabel = new javax.swing.JLabel();
-        javax.swing.JLabel appHomepageLabel = new javax.swing.JLabel();
         javax.swing.JLabel appDescLabel = new javax.swing.JLabel();
         javax.swing.JLabel imageLabel = new javax.swing.JLabel();
+        homePageURL = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(gomoku.GoMokuApp.class).getContext().getResourceMap(GoMokuAboutBox.class);
@@ -70,14 +70,16 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
         homepageLabel.setText(resourceMap.getString("homepageLabel.text")); // NOI18N
         homepageLabel.setName("homepageLabel"); // NOI18N
 
-        appHomepageLabel.setText(resourceMap.getString("Application.homepage")); // NOI18N
-        appHomepageLabel.setName("appHomepageLabel"); // NOI18N
-
         appDescLabel.setText(resourceMap.getString("appDescLabel.text")); // NOI18N
         appDescLabel.setName("appDescLabel"); // NOI18N
 
         imageLabel.setIcon(resourceMap.getIcon("imageLabel.icon")); // NOI18N
         imageLabel.setName("imageLabel"); // NOI18N
+
+        homePageURL.setEditable(false);
+        homePageURL.setText(resourceMap.getString("homePageURL.text")); // NOI18N
+        homePageURL.setBorder(null);
+        homePageURL.setName("homePageURL"); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -97,9 +99,10 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(appVersionLabel)
                             .addComponent(appVendorLabel)
-                            .addComponent(appHomepageLabel)))
+                            .addComponent(homePageURL, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addComponent(appTitleLabel, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE)
+                    .addComponent(appDescLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                     .addComponent(closeButton))
                 .addContainerGap())
         );
@@ -121,7 +124,7 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(homepageLabel)
-                    .addComponent(appHomepageLabel))
+                    .addComponent(homePageURL, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(47, 47, Short.MAX_VALUE)
                 .addComponent(closeButton)
                 .addContainerGap())
@@ -133,6 +136,7 @@ public class GoMokuAboutBox extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton closeButton;
+    private javax.swing.JTextField homePageURL;
     // End of variables declaration//GEN-END:variables
     
 }
