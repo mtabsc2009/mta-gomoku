@@ -17,7 +17,7 @@
             <td style='BackGround: #AEDF8E; Color: #FFFFFF;'
                 onmouseout="style.backgroundColor='#AEDF8E'; style.color='white';"
                 onmouseover="style.backgroundColor='#70A571'; style.color='white';">
-                <a href="UnderConstruction.jsp">שחק Applet-Moku!</a>
+                <a href="gomokuapplet.jsp">שחק Applet-Moku!</a>
             </td>
             <td style='BackGround: #AEDF8E; Color: #FFFFFF;'
                 onmouseout="style.backgroundColor='#AEDF8E'; style.color='white';"
