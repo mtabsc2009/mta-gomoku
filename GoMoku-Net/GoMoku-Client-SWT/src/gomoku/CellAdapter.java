@@ -7,10 +7,10 @@ package gomoku;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
-import java.awt.Point;
+//import java.awt.Point;
+import gomoku.Model.Point;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import javax.swing.JOptionPane;
 
 public class CellAdapter extends MouseAdapter {
     private LinkedList<GoMokuActionListener> handlerList;

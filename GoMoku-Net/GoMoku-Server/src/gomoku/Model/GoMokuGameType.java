@@ -5,6 +5,8 @@
 
 package gomoku.Model;
 
+import java.io.Serializable;
+
 /**
  * Holds the supported game types:
  * <ol>
@@ -16,26 +18,26 @@ package gomoku.Model;
  * <p>
  * Each game type has a corresponding command line argument for requesting this type.  
  * <p>
- * This enum makes use of the Java-Enums, as are described in 
- * http://java.sun.com/j2se/1.5.0/docs/guide/language/enums.html
- */
-public enum GoMokuGameType {
-    ComputerVSUser("CU"),
-    UserVSComputer("UC"),
-    UserVSUser("UU");
+*/
+public class GoMokuGameType implements Serializable{
+    public static int ComputerVSUserId = 0;
+    public static int UserVSComputerId = 1;
+    public static int UserVSUserId = 2;
     
-    private String m_commandLineArgument;
+    public static GoMokuGameType ComputerVSUser = new GoMokuGameType(ComputerVSUserId);
+    public static GoMokuGameType UserVSComputer = new GoMokuGameType(UserVSComputerId);
+    public static GoMokuGameType UserVSUser = new GoMokuGameType(UserVSUserId);
     
-    private GoMokuGameType(String commandLineArgument) {
-    	m_commandLineArgument = commandLineArgument;
+    private int type;
+    private GoMokuGameType(int t) {
+        type = t;
     }
-    
-    /**
-     * 
-     * @return the command line arguments that corresponds to a particular game type
-     */
-    public String getCmdline() {
-    	return m_commandLineArgument;
+    public String name() {
+        if (type == ComputerVSUserId)
+            return new String("ComputerVSUser");
+        if (type == UserVSComputerId) 
+            return new String("UserVSComputer");
+        return new String ("UserVSUser");
     }
     
 }

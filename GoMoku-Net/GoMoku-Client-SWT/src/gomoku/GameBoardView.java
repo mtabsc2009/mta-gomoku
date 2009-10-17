@@ -8,7 +8,6 @@ package gomoku;
 
 import gomoku.NetworkAdapter.*;
 import java.awt.Color;
-import java.awt.Point;
 import gomoku.Model.*;
 import java.util.LinkedList;
 
@@ -86,7 +85,8 @@ public class GameBoardView extends javax.swing.JPanel {
               {
                   if (board.getPawnType(i, j) != null)
                   {
-                      Color c = board.getPawnType(i, j) == PawnType.Black ? Color.black : Color.white;
+                      PawnType type = board.getPawnType(i, j);
+                      Color c = type.getPawnType() == PawnType.BlackId ? Color.black : Color.white;
                       this.boardCells[j][i].setBgColor(c);
                       this.boardCells[j][i].updateUI();
                   }

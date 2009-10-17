@@ -12,7 +12,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import java.awt.Point;
+import gomoku.Model.Point;
 import gomoku.Model.GoMokuGameType;
 
 

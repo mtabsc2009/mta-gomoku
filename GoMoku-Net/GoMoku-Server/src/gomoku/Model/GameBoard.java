@@ -1,9 +1,7 @@
 package gomoku.Model;
 
-import java.awt.Point;
 import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.ListIterator;
+
 
 /**
  * The game board of the GoMoku Game
@@ -20,7 +18,7 @@ public class GameBoard implements Serializable{
     /** the maximum number of pawns that can be placed on the board */
     private int m_maxPawnCount;				
     /** stores the pawns that are placed on the board */
-    private LinkedList<Pawn> m_gameBoard;	
+    Pawn []  m_gameBoard;	
 
     // Public methods
     
@@ -33,8 +31,12 @@ public class GameBoard implements Serializable{
     	m_boardSize = boardSize;
         /* max number of elements on a square board */
         m_maxPawnCount = m_boardSize * m_boardSize;	
-        m_gameBoard = new LinkedList<Pawn>();
-               
+        m_gameBoard = new Pawn[m_maxPawnCount];
+
+        int i;
+        for (i = 0 ; i < m_gameBoard.length ; ++i)
+            m_gameBoard[i] = null;
+        
     }
 
     /**
@@ -44,6 +46,7 @@ public class GameBoard implements Serializable{
      */
     public boolean PlaceBlackPawn(Point pawnLocation) {
         return placePawn(new Pawn(getPawnsCount() +1, pawnLocation, PawnType.Black));
+        
     }
 
     /**
@@ -109,7 +112,14 @@ public class GameBoard implements Serializable{
      * @return number of pawns currently on the board
      */
     public int getPawnsCount() {
-        return m_gameBoard.size();
+        int i, count = 0;
+        for (i = 0 ; i < m_gameBoard.length ; ++i) {
+            if (m_gameBoard[i] != null) {
+                count++;
+            }
+        }
+            
+        return count;
     }
 
     /**
@@ -136,14 +146,16 @@ public class GameBoard implements Serializable{
      * @return Pawn object if there is a pawn at the location. otherwise returns null.
      */
     protected Pawn findPawn(Point location) {
-    	ListIterator<Pawn> itr = m_gameBoard.listIterator();
-    	
-    	while (itr.hasNext()) {
-    		Pawn p = itr.next();
-    		if (p.getLocation().x == location.x && p.getLocation().y == location.y) {
-    			return p;
-    		}
-    	}
+        int i;
+        
+        for (i = 0 ; i < m_gameBoard.length ; ++i) {
+            if (m_gameBoard[i] != null) {
+                if (m_gameBoard[i].getLocation().x == location.x &&
+                        m_gameBoard[i].getLocation().y == location.y ) {
+                    return m_gameBoard[i];
+                }
+            }
+        }
     	
         return null;
     }
@@ -171,7 +183,7 @@ public class GameBoard implements Serializable{
         	return false;
         }
         
-        m_gameBoard.add(pawn);
+        m_gameBoard[getPawnsCount()] = pawn;
         
         return true;
     }

@@ -6,7 +6,7 @@ import gomoku.Model.GoMokuGameType;
 import gomoku.Model.Player;
 import gomoku.Model.GameBoard;
 import gomoku.Model.PawnType;
-import java.awt.Point;
+import gomoku.Model.Point;
 import java.io.Serializable;
 
 
@@ -49,9 +49,9 @@ public abstract class GoMokuGame implements Serializable {
     	
         m_gameBoard = new GameBoard(MIN_BOARD_SIZE);
 
-        switch (m_gameType) {
+        
         	
-        case ComputerVSUser:     
+        if (m_gameType.equals(m_gameType.ComputerVSUser)) {
     		m_players[WHITE_PLAYER_INDEX] = new ComputerPlayer(
                         m_gameBoard, 
                        WHITE_PLAYER_TITLE);
@@ -60,9 +60,9 @@ public abstract class GoMokuGame implements Serializable {
                         m_gameBoard, 
                         BLACK_PLAYER_TITLE);
         	
-        	break;
-        	
-        case UserVSComputer:     
+        }
+        if (m_gameType.equals(m_gameType.UserVSComputer)) {        	
+        
     		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
                         WHITE_PLAYER_TITLE);
@@ -71,9 +71,10 @@ public abstract class GoMokuGame implements Serializable {
                         m_gameBoard, 
                        BLACK_PLAYER_TITLE);
     		
-        	break;
+        }
         
-        case UserVSUser:         
+        if (m_gameType.equals(m_gameType.UserVSUser)) {        	
+        
     		m_players[WHITE_PLAYER_INDEX] = new HumanPlayer(
                         m_gameBoard, 
                         WHITE_PLAYER_TITLE);
@@ -82,7 +83,6 @@ public abstract class GoMokuGame implements Serializable {
                         m_gameBoard, 
                         BLACK_PLAYER_TITLE);
         	
-    		break;
         }
         
         return;

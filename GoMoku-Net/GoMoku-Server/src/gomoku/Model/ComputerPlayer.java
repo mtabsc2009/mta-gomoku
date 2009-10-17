@@ -1,7 +1,6 @@
 package gomoku.Model;
 
-import gomoku.Model.GameBoard;
-import java.awt.Point;
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -9,7 +8,7 @@ import java.util.Random;
  * Currently the computer doesn't use any game-play logic. 
  * It just generates random moves. 
  */
-public class ComputerPlayer extends Player {
+public class ComputerPlayer extends Player implements Serializable{
 	
 	public ComputerPlayer (GameBoard board, String name) {
 		super(board, name);

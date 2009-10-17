@@ -6,28 +6,18 @@
 
 package gomoku;
 
-import com.sun.org.apache.bcel.internal.generic.ICONST;
 import gomoku.NetworkAdapter.GoMokuGameLogic;
-import java.awt.Point;
 import java.awt.Color;
 import javax.swing.JOptionPane;
 import gomoku.Model.GoMokuGameType;
-import java.awt.TrayIcon.MessageType;
-import java.io.FileOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.ConnectException;
 import java.util.LinkedList;
-import java.util.ListIterator;
 import java.util.Properties;
 import javax.swing.SwingUtilities;
-import javax.swing.plaf.IconUIResource;
-import org.jdesktop.application.Action;
-        
+import gomoku.Model.Point;        
 
 public class GamePanel extends javax.swing.JPanel 
         implements GoMokuActionListener, Serializable, Runnable {
@@ -131,6 +121,7 @@ private  Point convertStringToMove(String input)
         return (symbol - BOARD_START_COLUMN + 1);
     }
 
+    /* this method is never used - remove it? */
     private GoMokuGameType convertStringToGameType(String str) {
         GoMokuGameType gameType;
         if (GoMokuGameType.UserVSComputer.name().equals(str))
@@ -146,7 +137,7 @@ private  Point convertStringToMove(String input)
     {
         this.gameBoardView.updateBoardView(game);
 
-        Color player = game.getCurrPlayer().getName().compareTo("White") == 0 ? Color.white : Color.black;
+        Color player = game.getCurrPlayerName().compareTo("White") == 0 ? Color.white : Color.black;
         this.currentPlayer.setBackground(player);
     }
 
@@ -201,7 +192,8 @@ private  Point convertStringToMove(String input)
                 }
             );
         }
-        catch (Exception ex)
+        
+        catch (Exception ex)    
         {
             JOptionPane.showMessageDialog(this, "Game ended by other player", "Game over", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -217,11 +209,11 @@ private  Point convertStringToMove(String input)
             String myStat = null;
             if (victoryAchieved)
             {
-                String winnerName = game.getWinner().getName();
+                String winnerName = game.getWinnerName();
                 Color winnerColor = winnerName.compareTo("White") == 0 ? Color.white : Color.black;
                 currentPlayer.setBackground(winnerColor);
                 myStat =
-                        winnerName.compareTo(game.getMyPlayer().getName()) == 0  ?
+                        winnerName.compareTo(game.getMyPlayerName()) == 0  ?
                             "You win!" : "You lost!";
                 gameStatText.setText(winnerName + " Wins!");
             }
@@ -236,7 +228,7 @@ private  Point convertStringToMove(String input)
         }
         else
         {
-            String whosTurn = game.getCurrPlayer().getName().compareTo(game.getMyPlayer().getName()) == 0  ?
+            String whosTurn = game.getCurrPlayerName().compareTo(game.getMyPlayerName()) == 0  ?
                 "Youre Move" : "Wait for move";
             gameStatText.setText(whosTurn);
             gameStatText.setVisible(true);
@@ -436,8 +428,8 @@ private  Point convertStringToMove(String input)
     private String getOponentFromPlayer(String players)
     {
             ChooseOponentDialog dialog = new ChooseOponentDialog(GoMokuAppView.topFrame , true);
-            Point thisLocation;
-            thisLocation = new Point(400,400);
+            java.awt.Point thisLocation;
+            thisLocation = new java.awt.Point(400,400);
             try
             {
                 thisLocation = this.getLocationOnScreen();
@@ -445,7 +437,7 @@ private  Point convertStringToMove(String input)
             catch (Exception e) { }
             int newX = thisLocation.x + this.getWidth()/2 - dialog.getWidth()/2;
             int newY = thisLocation.y + this.getHeight()/2 - dialog.getHeight()/2;
-            dialog.setLocation(new Point(newX, newY));
+            dialog.setLocation(new java.awt.Point(newX, newY));
             dialog.setPlayers(players);
             dialog.setVisible(true);
 
@@ -462,7 +454,7 @@ private  Point convertStringToMove(String input)
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        gameBoardView = new gomoku.GameBoardView();
+        gameBoardView = new GameBoardView();
         jLabel2 = new javax.swing.JLabel();
         moveLocationString = new javax.swing.JTextField();
         makeMoveButton = new javax.swing.JButton();
@@ -603,7 +595,7 @@ private  Point convertStringToMove(String input)
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel currentPlayer;
     private javax.swing.JTextField currentPlayerText;
-    private gomoku.GameBoardView gameBoardView;
+    private GameBoardView gameBoardView;
     private javax.swing.JTextField gameStatText;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

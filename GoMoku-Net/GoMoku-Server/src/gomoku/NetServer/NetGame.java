@@ -1,6 +1,5 @@
 package gomoku.NetServer;
 
-import gomoku.Model.GoMokuGameType;
 import gomoku.Controller.*;
 import gomoku.Model.*;
 
