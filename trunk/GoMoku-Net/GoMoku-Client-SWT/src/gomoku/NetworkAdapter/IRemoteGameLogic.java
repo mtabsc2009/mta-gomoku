@@ -1,7 +1,6 @@
 package gomoku.NetworkAdapter;
 
 import gomoku.Model.*;
-import java.awt.Point;
 import java.io.IOException;
 
 public interface IRemoteGameLogic {
@@ -15,9 +14,9 @@ public interface IRemoteGameLogic {
 
     void waitForMove() throws IOException, ClassNotFoundException;
 
-    Player getMyPlayer();
-    Player getCurrPlayer();
-    Player getWinner();
+    String getMyPlayerName();
+    String getCurrPlayerName();
+    String  getWinnerName();
 
     GameBoard getGameBoard();
     GoMokuGameType getGameType();

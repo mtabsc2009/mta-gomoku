@@ -1,14 +1,12 @@
 package gomoku.NetServer;
 
 import gomoku.Controller.GoMokuGameLogic;
-import gomoku.Model.GameBoard;
-import java.awt.Point;
+import gomoku.Model.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.*;
-import java.util.Calendar;
-import java.util.Date;
+
 
 public class NetClient
 {
@@ -77,7 +75,11 @@ public class NetClient
         }
         m_outStream.flush();
         m_outStream.reset();
+        
+        
+        
         m_outStream.writeObject(content);
+        System.out.println("sent to " + m_clientID + ":" + content.getClass().getName() + " " + content);
         m_outStream.flush();
     }
 
@@ -141,7 +143,7 @@ public class NetClient
                     }
                     catch (Exception e)
                     {
-                        System.err.println("waiting failed " + thisClient.getClientFullName() + " " + e.toString() + " " + e.getMessage());
+                        System.err.println("waiting failed "+e.getMessage() +" "+ thisClient.getClientFullName() + " " + e.toString() + " " + e.getMessage());
                         m_topServer.disconnectClient(thisClient, e);
                         Terminate();
                     }
@@ -185,7 +187,7 @@ public class NetClient
                 m_isInitiator = oponentChosen;
                 if (oponentChosen)
                 {
-                    Send(m_gameSession.getGameSession().getPlayer(GoMokuGameLogic.BLACK_PLAYER_INDEX));
+                    Send(m_gameSession.getGameSession().getPlayer(GoMokuGameLogic.BLACK_PLAYER_INDEX).getName());
                 } else
                 {
                     // Refused ior unsuccesfull, WaitForInitiation waiting for proposals
@@ -211,19 +213,28 @@ public class NetClient
             {
                 // Get a move
                 System.out.println("turn of " + m_isInitiator + " " + this.getClientFullName());
-                sendBoard(game);
+                sendBoard(game);  //TODO: remove it?
                 System.out.println("board sent to " + m_isInitiator + " " + this.getClientFullName());
 
                 // Then make a move
                 Point move = (Point) m_inStream.readObject();
-                System.out.println("got move " + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
-                game.makeMove(move);
+                Boolean  moveWasPerformed = game.makeMove(move);
+                System.out.println("got move " + (moveWasPerformed?"legal ":"ilegal ") + move.toString() + "from " + m_isInitiator + " " + this.getClientFullName());
+                
+                ///Send(moveWasPerformed);
                 System.out.println("move " + move.toString() + "was made by " + m_isInitiator + " " + this.getClientFullName());
-
+//                if (!moveWasPerformed)
+   //                 continue;
                 // Send the new state
+      //          sendBoard(game,move);
                 sendBoard(game);
                 System.out.println("board2 sent to " + m_isInitiator + " " + this.getClientFullName());
             }
+            
+            // avoid cpu exhaustion
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {}
         }
 
         // Close the game
@@ -232,10 +243,10 @@ public class NetClient
 
     public void Terminate()
     {
-        try { this.m_Thread.interrupt(); } catch (Exception ex) { ; }
-        try { m_inStream.close(); } catch (Exception ex) { ; }
-        try { m_outStream.close(); } catch (Exception ex) { ; }
-        try { m_Socket.close(); } catch (Exception ex) { ; }
+        try { this.m_Thread.interrupt(); } catch (Exception ex) { }
+        try { m_inStream.close(); } catch (Exception ex) { }
+        try { m_outStream.close(); } catch (Exception ex) {}
+        try { m_Socket.close(); } catch (Exception ex) { }
 
         if (m_gameSession != null)
         {
@@ -245,16 +256,16 @@ public class NetClient
         }
     }
 
-    private void sendBoard(GoMokuGameLogic game) throws IOException
+    private void sendBoard(GoMokuGameLogic game/*, Point move*/) throws IOException
     {
-        Send(game.getGameBoard());
-        sendGameStats(game);        
+        Send(game.getGameBoard());  // TODO: remove it?
+        sendGameStats(game/*,move*/);        
     }
 
-    private void sendGameStats(GoMokuGameLogic game) throws IOException
+    private void sendGameStats(GoMokuGameLogic game/*, Point move*/) throws IOException
     {
         // Send the status of the game
-        Send(game.getCurrPlayer());
+        Send(game.getCurrPlayer().getName());
         Send(new Boolean(game.isGameOver()));
 
         // If the game is over - send the victory
@@ -267,13 +278,16 @@ public class NetClient
             // If there was a victory - send the winner
             if (game.getVictoryAchieved())
             {
-                Send(game.getWinner());
+                Send(game.getWinner().getName());
             }
 
             // Notify the other player
+            
             NetClient otherClient = this.getClientID() == m_gameSession.getClient1().getClientID() ?
                 m_gameSession.getClient2() : m_gameSession.getClient1();
+//            otherClient.Send(move);
             otherClient.sendBoard(game);
+            
         }
     }
 
@@ -284,7 +298,7 @@ public class NetClient
         // If im not the initiator - send the opoent to the client
         if (this.getClientID() == game.getClient2().getClientID())
         {
-            Send(game.getGameSession().getPlayer(GoMokuGameLogic.WHITE_PLAYER_INDEX));
+            Send(game.getGameSession().getPlayer(GoMokuGameLogic.WHITE_PLAYER_INDEX).getName());
             final NetClient thisClient = this;
             m_Thread = new Thread(new Runnable()
             {

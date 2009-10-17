@@ -1,7 +1,5 @@
 package gomoku.Model;
 
-import gomoku.Model.GameBoard;
-import java.awt.Point;
 import java.io.Serializable;
 
 /**

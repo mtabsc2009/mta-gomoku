@@ -3,7 +3,7 @@ package gomoku.Controller;
 import gomoku.Model.ComputerPlayer;
 import gomoku.Model.GoMokuGameType;
 import gomoku.Model.Player;
-import java.awt.Point;
+import gomoku.Model.Point;
 import java.io.Serializable;
 
 public class GoMokuGameLogic extends GoMokuGame implements Serializable{
@@ -29,7 +29,7 @@ public class GoMokuGameLogic extends GoMokuGame implements Serializable{
         }
     }
 
-    public void makeMove(Point move)
+    public boolean  makeMove(Point move)
     {
 
         // Play the game until its over (quit, full board, or winning)
@@ -54,8 +54,10 @@ public class GoMokuGameLogic extends GoMokuGame implements Serializable{
                     isWhiteTurn = !isWhiteTurn;
                     makeComputerMove(nextPlayer);
                 }
+                return isLegalMove;
             }
         }
+        return false;
     }
 
     public void makeFirstComputerMove()

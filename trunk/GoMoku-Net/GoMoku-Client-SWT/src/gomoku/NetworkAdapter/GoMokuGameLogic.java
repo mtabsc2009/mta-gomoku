@@ -6,7 +6,6 @@
 package gomoku.NetworkAdapter;
 
 import gomoku.Model.*;
-import java.awt.Point;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -27,14 +26,14 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     private Socket m_Socket;
     private GameBoard m_GameBoard;
-    private Player m_Player;
-    private Player m_Oponent;
+    private String m_PlayerName;
+    private String m_OponentName;
     private String m_PlayersFromServer;
 
     private boolean m_IsGameOver;
     private boolean m_IsVictoryAcheaved;
-    private Player m_Winner;
-    private Player m_CurrPlayer;
+    private String  m_WinnerName;
+    private String  m_CurrPlayerName;
     
     private ObjectInputStream m_inStream;
     private ObjectOutputStream m_outStream;
@@ -42,12 +41,13 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     public GoMokuGameLogic(GoMokuGameType type, String playerName) throws UnknownHostException, IOException, ClassNotFoundException
     {
         m_GameBoard = new GameBoard(15);
-        m_Player = new HumanPlayer(m_GameBoard, playerName);
+//        m_Player = new HumanPlayer(m_GameBoard, playerName);
 
         m_IsGameOver = false;
         m_IsVictoryAcheaved = false;
-        m_Winner = null;
-        m_CurrPlayer = m_Player;
+        m_WinnerName = null;
+        m_CurrPlayerName = playerName;
+        m_PlayerName = playerName;
 
 
         try
@@ -90,21 +90,21 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_outStream.flush();
 
         // Get confirmatiion from the server
-        Boolean b = (Boolean)m_inStream.readObject();
+        Boolean b = (Boolean)readObjectFromInputStream();
         oponentChosen = b.booleanValue();
 
         // If confirmed - get the oponent
         if (oponentChosen)
         {
-            m_Oponent = (Player)m_inStream.readObject();
+            m_OponentName = (String)readObjectFromInputStream();
         }
 
         return oponentChosen;
     }
 
-    public Player getOponent()
+    public String getOponentName()
     {
-        return m_Oponent;
+        return m_OponentName;
     }
 
     public String waitForOponent() throws IOException, ClassNotFoundException
@@ -113,7 +113,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_outStream.writeObject("a");
         m_outStream.flush();
 
-        String oponent = m_inStream.readObject().toString();
+        String oponent = ((String)readObjectFromInputStream()).toString();
 
         // Write a byte to release the server from waiting to close the session
         m_outStream.writeObject(new Boolean(true));
@@ -130,7 +130,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_outStream.flush();
 
         // Get the oponent
-        m_Oponent = (Player)m_inStream.readObject();
+        m_OponentName = (String)readObjectFromInputStream();
 
         // Confirm player
         m_outStream.flush();
@@ -143,9 +143,9 @@ public class GoMokuGameLogic implements IRemoteGameLogic
         m_outStream.flush();
     }
 
-    public Player getMyPlayer()
+    public String getMyPlayerName()
     {
-        return m_Player;
+        return m_PlayerName;
     }
 
 
@@ -156,17 +156,17 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     private void getPlayersFromServer() throws IOException, ClassNotFoundException
     {
-        m_PlayersFromServer = (String)m_inStream.readObject();
+        m_PlayersFromServer = (String)readObjectFromInputStream();
     }
 
-    public Player getCurrPlayer()
+    public String getCurrPlayerName()
     {
-        return m_CurrPlayer;
+        return m_CurrPlayerName;
     }
 
-    public Player getWinner()
+    public String getWinnerName()
     {
-        return m_Winner;
+        return m_WinnerName;
     }
 
     public GameBoard getGameBoard()
@@ -208,6 +208,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     {
         m_outStream.writeObject(move);
         m_outStream.flush();
+
         readBoard();
     }
 
@@ -217,40 +218,50 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     private void readBoard() throws IOException, ClassNotFoundException
     {
-        readBoardView();
+        readBoardView(); 
         readGameStats();
     }
 
     private void readBoardView() throws IOException, ClassNotFoundException
     {
         m_GameBoard = null;
-        m_GameBoard = (GameBoard)m_inStream.readObject();
+        m_GameBoard = (GameBoard)readObjectFromInputStream();
+//        Point pawnLocation = (Point)readObjectFromInputStream();
+//        m_GameBoard.PlaceBlackPawn(pawnLocation);
+        
     }
     
     private void readGameStats() throws IOException, ClassNotFoundException
     {
         // Send the status of the game
-        m_CurrPlayer = (Player)m_inStream.readObject();
-        if (m_Oponent != null && m_Oponent.getName().compareTo(m_CurrPlayer.getName()) != 0)
+        m_CurrPlayerName = (String)readObjectFromInputStream();
+        if (m_OponentName != null && m_OponentName.compareTo(m_CurrPlayerName) != 0)
         {
-            m_Player = m_CurrPlayer;
+            m_PlayerName = m_CurrPlayerName;
         }
 
-        m_IsGameOver = ((Boolean)m_inStream.readObject()).booleanValue();
+        m_IsGameOver = ((Boolean)readObjectFromInputStream()).booleanValue();
 
         // If the game is over - send the victory
         if (m_IsGameOver)
         {
-            m_IsVictoryAcheaved = ((Boolean)m_inStream.readObject()).booleanValue();
+            m_IsVictoryAcheaved = ((Boolean)readObjectFromInputStream()).booleanValue();
 
             // If there was a victory - send the winner
             if (m_IsVictoryAcheaved)
             {
-                m_Winner = (Player)m_inStream.readObject();
+                m_WinnerName = (String)readObjectFromInputStream();
             }
 
             try { readBoardView(); }
             catch (Exception e) { }
         }
     }
+    
+    private Object readObjectFromInputStream() throws IOException, ClassNotFoundException{
+        Object obj = m_inStream.readObject();
+        System.out.println("received object " + obj.getClass().getName() +"  "+ obj.toString());
+        return obj;
+    }
+      
 }

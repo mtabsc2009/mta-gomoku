@@ -1,13 +1,12 @@
 package gomoku.Model;
 
-import gomoku.Model.GameBoard;
+import java.io.Serializable;
 
-import java.awt.Point;
 
 /**
  * HumanPlayer implementation to the Player abstract class
  */
-public class HumanPlayer extends Player {
+public class HumanPlayer extends Player implements Serializable{
 
 	public HumanPlayer (GameBoard board, String name) {
 		super(board,name);
