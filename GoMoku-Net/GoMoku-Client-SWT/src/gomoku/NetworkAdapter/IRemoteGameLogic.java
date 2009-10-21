@@ -3,6 +3,7 @@ package gomoku.NetworkAdapter;
 import gomoku.Model.*;
 import java.io.IOException;
 
+
 public interface IRemoteGameLogic {
 
     String getAvailablePlayers();
