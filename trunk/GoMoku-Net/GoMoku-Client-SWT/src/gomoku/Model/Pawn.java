@@ -1,9 +1,9 @@
 package gomoku.Model;
-import java.io.Serializable;
+
 /**
  * The simple pawn of the game
  */
-public class Pawn implements Serializable {
+public class Pawn  {
 
     private int m_sequence;
     private PawnType  m_type;   

@@ -5,14 +5,11 @@
 
 package gomoku.Model;
 
-//import j2mehelper.io.Serializable;
-import java.io.Serializable;
-
 /**
  *
  * @author Michael
  */
-public class Point implements Serializable{
+public class Point{
     public int x,y;
     public Point(Point p) {
         x = p.x;

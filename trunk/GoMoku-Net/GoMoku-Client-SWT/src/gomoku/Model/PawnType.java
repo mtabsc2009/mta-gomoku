@@ -1,8 +1,7 @@
 package gomoku.Model;
 
-import java.io.Serializable;
 
-public class PawnType implements Serializable{
+public class PawnType {
 	
         static public int WhiteId = 0;
 	static public int BlackId = 1;
