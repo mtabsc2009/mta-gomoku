@@ -1,12 +1,10 @@
 package gomoku.Model;
 
-import java.io.Serializable;
-
 /**
  * Player is an abstract class. 
  * The derived class is required to implement the makeMove method. 
  */
-public abstract class Player implements Serializable{
+public abstract class Player {
 	
 	protected GameBoard m_board;
 	/** player's name */

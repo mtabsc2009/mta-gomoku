@@ -5,8 +5,6 @@
 
 package gomoku.Model;
 
-import java.io.Serializable;
-
 /**
  * Holds the supported game types:
  * <ol>
@@ -19,7 +17,7 @@ import java.io.Serializable;
  * Each game type has a corresponding command line argument for requesting this type.  
  * <p>
 */
-public class GoMokuGameType implements Serializable{
+public class GoMokuGameType {
     public static int ComputerVSUserId = 0;
     public static int UserVSComputerId = 1;
     public static int UserVSUserId = 2;

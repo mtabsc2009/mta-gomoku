@@ -2,13 +2,10 @@
 
 package gomoku.Model;
 
-import java.io.Serializable;
-
-
 /**
  * The game board of the GoMoku Game
  */
-public class GameBoard implements Serializable{
+public class GameBoard {
 
     // Constants
     public static final char BOARD_START_COLUMN = 'A';
