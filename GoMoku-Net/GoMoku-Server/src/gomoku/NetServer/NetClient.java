@@ -121,7 +121,8 @@ public class NetClient
                         else
                         {
                             // Block the thread, if the client exits - it will close
-                            gomokuSer.readObject();
+                            Object o = gomokuSer.readObject();
+                            System.out.print("==================="+o.toString());
                             System.out.println("stopped waiting for oponents " + thisClient.getClientFullName());
                         }
                     }
