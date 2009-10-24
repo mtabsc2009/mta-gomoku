@@ -159,7 +159,7 @@ public class GomokuObjectSerializer {
      * may be enabled/disabled on compile time.
      */
     private void debugPrint(String str) {
-//        System.out.println(this.getClass().toString()+str);
+        System.out.println(this.getClass().toString()+str);
     }
 
 }
