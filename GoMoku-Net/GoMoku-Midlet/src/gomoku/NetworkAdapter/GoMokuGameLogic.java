@@ -36,7 +36,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
 
     
     public GoMokuGameLogic(GoMokuGameType type, String serverIP, int serverPort, String playerName)
-            throws UnknownHostException, IOException, ClassNotFoundException
+            throws IOException, ClassNotFoundException
     {
         GOMOKU_SERVER_ADDRESS = serverIP;
         GOMOKU_SERVER_PORT = serverPort;
@@ -203,7 +203,7 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     {
         gomokuSer.writeObject(move);
 
-        readBoard();
+        //readBoard();
     }
 
     public String getAvailablePlayers() {
@@ -228,14 +228,16 @@ public class GoMokuGameLogic implements IRemoteGameLogic
     private void readGameStats() throws IOException, ClassNotFoundException
     {
         // Send the status of the game
+        System.out.println("D1");
         m_CurrPlayerName = (String)gomokuSer.readObject();
+        System.out.println("D2");
         if (m_OponentName != null && m_OponentName.compareTo(m_CurrPlayerName) != 0)
         {
             m_PlayerName = m_CurrPlayerName;
         }
-
+        System.out.println("D3");
         m_IsGameOver = ((Boolean)gomokuSer.readObject()).booleanValue();
-
+        System.out.println("D4");
         // If the game is over - send the victory
         if (m_IsGameOver)
         {
