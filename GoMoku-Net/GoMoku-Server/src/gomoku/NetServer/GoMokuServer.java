@@ -126,8 +126,6 @@ public class GoMokuServer
 
     private void sendWelcome(NetClient newClient)
     {
-        // Get the socket
-        Socket clientSocket = newClient.getSocket();
 
         // Create the users list
         StringBuilder availablePlayers = new StringBuilder(m_FreeClientsTable.size());
@@ -153,11 +151,9 @@ public class GoMokuServer
             }
         }
 
-        // Sennd the players list
+        // Send the players list
         try
         {
-//            ObjectOutputStream out = new ObjectOutputStream(clientSocket.getOutputStream());
-//            out.writeObject(availablePlayers.toString());
               newClient.Send(availablePlayers.toString());
         }
         catch (Exception ex)
